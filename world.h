@@ -1,7 +1,6 @@
-#include <SDL2/SDL.h>
-
-#ifndef FONCTIONS_FICHIERS_H
-#define FONCTIONS_FICHIERS_H
+#include <SDL2/SDL.h> // a supprimer
+#ifndef WORLD_H
+#define WORLD_H
 
 /**
  * le nombre de sprites 
@@ -22,6 +21,16 @@
  * le pas de deplacement 
 */
 #define MOVE_STEP 5
+
+
+/**
+ * \brief structure des sprites
+*/
+typedef struct sprite_s{
+    char caractere ;  
+    SDL_Rect Dest_Sprite ; /*!< destination du sprites */
+} sprite_t ;
+
 
 /**
 * @param int n
@@ -82,30 +91,7 @@ char** modifier_caractere(char** tab, int n, int m, char ancien, char nouveau);
 */
 void ecrire_fichier(const char* nomFichier, char** tab, int n, int m);
 
-/**
- * @brief structure des sprites
-*/
-typedef struct sprite_s{
-    char caractere ;  
-    SDL_Rect Dest_Sprite ; /*!< destination du sprites */
-} sprite_t ;
 
-/**
-*@param nomfichier le nom du fichier
-*@param renderer le renderer
-* charger une image et retourner la surface de texture associée.
-*/
-SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer);
-
-/**
-*@param nomfichier le nom du fichier
-*@param renderer le renderer
-*@param r la couleur rouge 
-*@param g la couleur vert 
-*@param b la couleur bleu
-* charger une image avec la transparence.
-*/
-SDL_Texture* charger_image_transparente(const char* nomfichier,SDL_Renderer* renderer,Uint8 r, Uint8 g, Uint8 b) ;
 
 /**
 * @param n le nombre de lignes
@@ -121,27 +107,6 @@ int nbSpriteAffichage(int n, int m);
 * retourne le tableau de sprites initialise selone le tableau fichier.txt;
 */
 sprite_t* initialiser_tabSprite(char**tab, int n, int m);
-
-/**
- * @param tabSprite le tableau de sprites
- * @param ecran le renderer
- * @param pavage la texture associe au pavage
- * @param tableau_Src_Sprites le tableau contenant contenant les sources pour les sprites
- * @param nbSpriteAffichage le nombre de caractere affichable
- * copie tous les sprites dans le rendererÒ
-*/
-void SDL_RenderCopySprites(sprite_t* tabSprite, SDL_Renderer* ecran, SDL_Texture* pavage, SDL_Rect* tableau_Src_Sprites,int nbSpriteAffichage);
-
-
-
-
-
-
-
-
-
-
-
 
 
 

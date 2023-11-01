@@ -3,11 +3,11 @@ CFLAGS = -W -Wall -ansi -std=c99 -g
 LIBS = 
 LDFLAGS = `sdl2-config --cflags --libs` 
 INCLUDES = 
-EXEC = main
-SRC = main.c fonctions_fichiers.c 
+EXEC = superMario_OX
+SRC = main.c world.c display.c
 OBJ = $(SRC:.c=.o)
 all: $(EXEC)
-main: $(OBJ)
+superMario_OX: $(OBJ)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $@ $^ $(LIBS) $(LDFLAGS)
 %.o: %.c
 	$(CC) $(CFLAGS) -o $@ -c $<

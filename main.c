@@ -1,34 +1,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "fonctions_fichiers.h"
+#include "world.h"
+#include "display.h"
+
 
 int main (){
-    // const char* nomFichier = "tabChiffres.txt";
-    // int line;
-    // int colone; 
-    // taille_fichier(nomFichier, &line, &colone);
-    // printf("creer un tableau 2D\n");
-    // char** T = allouer_tab_2D(line,colone);
-    // printf("lire un fichier\n");
-    // T = lire_fichier(nomFichier);
-    // printf("affiche un tableau 2D:\n");
-    // afficher_tab_2D(T,line,colone);
-    // printf("test la fonction modifier_caractere:\n");
-    // // modifier_caractere(T, line, colone,'1','a');
-    // afficher_tab_2D(modifier_caractere(T, line, colone,'1','a'),line,colone);
-    // char** tab = allouer_tab_2D(line,colone);
-    
    
     SDL_Window* fenetre; // Déclaration de la fenêtre
+    SDL_Renderer* ecran;
     SDL_Event evenements; // Événements liés à la fenêtre
     bool terminer = false;
-    if(SDL_Init(SDL_INIT_VIDEO) < 0) // Initialisation de la SDL
-    {
-        printf("Erreur d’initialisation de la SDL: %s",SDL_GetError());
-        SDL_Quit();
-        return EXIT_FAILURE;
-    }
 
     // allouer tableau 2D
     int line = 0;
@@ -39,21 +21,14 @@ int main (){
     tableauTerrain = lire_fichier(nomF);
     afficher_tab_2D(tableauTerrain, line, colone);
 
-    // Créer la fenêtre
-    fenetre = SDL_CreateWindow("Mon Jeu", SDL_WINDOWPOS_CENTERED,
-    SDL_WINDOWPOS_CENTERED, colone*SPRITE_SIZE, line*SPRITE_SIZE, SDL_WINDOW_RESIZABLE);
-    if(fenetre == NULL) // En cas d’erreur
-    {
-        printf("Erreur de la creation d’une fenetre: %s",SDL_GetError());
-        SDL_Quit();
-        return EXIT_FAILURE;
-    }
+    // initialiser la sdl et cree la fenêtre
+    init_sdl(&fenetre, &ecran, colone*SPRITE_SIZE, line*SPRITE_SIZE) ;
 
-    // Mettre en place un contexte de rendu de l’écran
-    SDL_Renderer* ecran;
-    ecran = SDL_CreateRenderer(fenetre, -1, SDL_RENDERER_ACCELERATED);
+   
+
+
     // Charger l’image
-    SDL_Texture* pavage = charger_image( "pavage.bmp", ecran );
+    SDL_Texture* pavage = charger_image( "ressources/pavage.bmp", ecran );
 
     // Gestion des sprites
     int nbSpriteAffichagable = nbSpriteAffichage(line, colone);
@@ -75,7 +50,7 @@ int main (){
     // initialisation et declaration du joueur
     int w ;
     int h ;
-    SDL_Texture *obj = charger_image_transparente("sprites.bmp", ecran, 0, 255, 255) ;
+    SDL_Texture *obj = charger_image_transparente("ressources/sprites.bmp", ecran, 0, 255, 255) ;
     //Récupérer largeur et hargeur de la texture avec SDL_QueryTexture
     SDL_QueryTexture(obj, NULL, NULL, &w, &h); 
     SDL_Rect SrcR, DestR;
