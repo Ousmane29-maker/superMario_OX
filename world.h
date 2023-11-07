@@ -31,12 +31,27 @@
 
 
 /**
- * \brief structure des sprites
+ * \brief Réprésentation du sprite à l'affichage graphique
 */
+
+
 typedef struct sprite_s{
-    char caractere ;  
-    SDL_Rect Dest_Sprite ; /*!< destination du sprites */
-} sprite_t ;
+    int x;/*!< Abscisse du sprite */
+    int y;/*!< Ordonnée du sprite */
+    int h;/*!< Hauteur du sprite */
+    int w;/*!< Largeur du sprite */
+}sprite_t ;
+
+/**
+ * \brief Représentation du monde du jeu
+*/
+
+typedef struct world_s{
+    int gameover; /*!< Champ indiquant si l'on est à la fin du jeu */
+    sprite_t player; /*!< Champ indiquant le joueur */
+    sprite_t* tab_platesFormes; /*!< Champ correspondant au tableau de plates-formes */
+}world_t ;
+    
 
 
 /**
