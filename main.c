@@ -23,10 +23,7 @@ int main (){
     afficher_tab_2D(tableauTerrain, line, colone);
 
     // initialiser la sdl et cree la fenêtre
-    init_sdl(&fenetre, &ecran, colone*SPRITE_SIZE, line*SPRITE_SIZE) ;
-
-   
-
+    init_sdl(&fenetre, &ecran, colone*SPRITE_SIZE, line*SPRITE_SIZE) ; 
 
     // Charger l’image
     SDL_Texture* pavage = charger_image( "ressources/pavage.bmp", ecran );
@@ -51,14 +48,14 @@ int main (){
     // initialisation et declaration du joueur
     int w ;
     int h ;
-    SDL_Texture *obj = charger_image_transparente("ressources/sprites.bmp", ecran, 0, 255, 255) ;
+    SDL_Texture *obj = charger_image_transparente("ressources/Mario.bmp", ecran, 0, 255, 255) ;
     //Récupérer largeur et hargeur de la texture avec SDL_QueryTexture
     SDL_QueryTexture(obj, NULL, NULL, &w, &h); 
     SDL_Rect SrcR, DestR;
     SrcR.x = 0;
     SrcR.y = 0;
-    SrcR.w = w/3 ;
-    SrcR.h = h/2 ;
+    SrcR.w = w/14 ;
+    SrcR.h = h/9 ;
     DestR.x = 0;
     DestR.y = 0;
     DestR.w = SIZE_OBJ;
