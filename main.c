@@ -11,6 +11,7 @@ int main (){
     SDL_Renderer* ecran;
     SDL_Event evenements; // Événements liés à la fenêtre
     bool terminer = false;
+    world_t world ; 
 
     // allouer tableau 2D
     int line = 0;
@@ -32,7 +33,7 @@ int main (){
 
     // Gestion des sprites
     int nbSpriteAffichagable = nbSpriteAffichage(line, colone);
-    sprite_t* tabSprite = initialiser_tabSprite(tableauTerrain, line, colone) ;
+    world.tab_platesFormes = initialiser_tabSprite(tableauTerrain, line, colone) ;
 
     //inialisation du tableau de source sprites
     SDL_Rect *tableau_Src_Sprites = malloc(NOMBRE_TEXTURE * sizeof(SDL_Rect)) ;
@@ -70,7 +71,7 @@ int main (){
         SDL_RenderClear(ecran);
         
         //copier les images des sprites dans le renderer
-        SDL_RenderCopySprites(tabSprite,ecran,pavage,tableau_Src_Sprites,nbSpriteAffichagable) ;
+        SDL_RenderCopySprites(world.tab_platesFormes,ecran,pavage,tableau_Src_Sprites,nbSpriteAffichagable) ;
         
         //copier le joueur dans le renderer
         SDL_RenderCopy(ecran, obj, &SrcR, &DestR); 
@@ -110,7 +111,6 @@ int main (){
     SDL_DestroyTexture(pavage);
     SDL_DestroyTexture(obj);
     SDL_DestroyRenderer(ecran);
-    free(tabSprite);
     free(tableau_Src_Sprites);
     desallouer_tab_2D(tableauTerrain, line);
     // Quitter SDL
