@@ -29,6 +29,7 @@
 
 
 typedef struct sprite_s{
+    char caractere ;
     int x;/*!< Abscisse du sprite */
     int y;/*!< Ordonnée du sprite */
     int h;/*!< Hauteur du sprite */
