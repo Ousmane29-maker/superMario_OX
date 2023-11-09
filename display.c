@@ -82,8 +82,10 @@ SDL_Texture* charger_image_transparente(const char* nomfichier, SDL_Renderer* re
 void SDL_RenderCopySprites(sprite_t* tabSprite, SDL_Renderer* ecran, SDL_Texture* pavage, SDL_Rect* tableau_Src_Sprites,int nbSpriteAffichage){
     for(int i = 0; i < nbSpriteAffichage; i++){
         switch (tabSprite[i].caractere)
-        {
-            case '0':
+        {    case ' ':
+                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[0], &tabSprite[i].Dest_Sprite) ;
+                break;
+            case '0' :
                 SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[0], &tabSprite[i].Dest_Sprite) ;
                 break;
             case '1':
@@ -97,7 +99,10 @@ void SDL_RenderCopySprites(sprite_t* tabSprite, SDL_Renderer* ecran, SDL_Texture
                 break;
             case '4':
                 SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[4], &tabSprite[i].Dest_Sprite) ;
-                break;    
+                break;  
+            case '5':
+                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[5], &tabSprite[i].Dest_Sprite) ;
+                break;   
         }
     }
 }

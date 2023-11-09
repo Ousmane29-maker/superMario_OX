@@ -45,17 +45,22 @@ int main (){
         x += SPRITE_SIZE; 
     }
 
+    tableau_Src_Sprites[5].x = 0;
+    tableau_Src_Sprites[5].y = SPRITE_SIZE;
+    tableau_Src_Sprites[5].h = SPRITE_SIZE ;
+    tableau_Src_Sprites[5].w = SPRITE_SIZE ;
+
     // initialisation et declaration du joueur
     int w ;
     int h ;
-    SDL_Texture *obj = charger_image_transparente("ressources/Mario.bmp", ecran, 0, 255, 255) ;
+    SDL_Texture *obj = charger_image_transparente("ressources/Mario.bmp", ecran, 95,205,228) ;
     //Récupérer largeur et hargeur de la texture avec SDL_QueryTexture
     SDL_QueryTexture(obj, NULL, NULL, &w, &h); 
     SDL_Rect SrcR, DestR;
-    SrcR.x = 0;
-    SrcR.y = 0;
-    SrcR.w = w/14 ;
-    SrcR.h = h/9 ;
+    SrcR.x = 1;
+    SrcR.y = 1;
+    SrcR.w = MARIO_WIDTH ;
+    SrcR.h = MARIO_HEIGHT ;
     DestR.x = 0;
     DestR.y = 0;
     DestR.w = SIZE_OBJ;

@@ -10,7 +10,7 @@
 /**
  * la taille d'un sprites
 */
-#define NOMBRE_TEXTURE 5
+#define NOMBRE_TEXTURE 6
 
 /**
  * la taille du joueur
@@ -21,6 +21,13 @@
  * le pas de deplacement 
 */
 #define MOVE_STEP 5
+
+
+#define MARIO_HEIGHT 24
+
+#define MARIO_WIDTH 16
+
+
 
 
 /**
