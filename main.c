@@ -7,11 +7,12 @@
 
 int main (){
    
+    GameState gameState;
     SDL_Window* fenetre; // Déclaration de la fenêtre
     SDL_Renderer* ecran;
     SDL_Event evenements; // Événements liés à la fenêtre
     bool terminer = false;
-    world_t world ; 
+
 
     // allouer tableau 2D
     int line = 0;
@@ -30,7 +31,7 @@ int main (){
 
     // Gestion des sprites
     int nbSpriteAffichagable = nbSpriteAffichage(line, colone);
-    world.tab_platesFormes = initialiser_tabSprite(tableauTerrain, line, colone) ;
+    sprite_t* tabSprite = initialiser_tabSprite(tableauTerrain, line, colone) ;
 
     //inialisation du tableau de source sprites
     SDL_Rect *tableau_Src_Sprites = malloc(NOMBRE_TEXTURE * sizeof(SDL_Rect)) ;
@@ -51,21 +52,22 @@ int main (){
     tableau_Src_Sprites[5].w = SPRITE_SIZE ;
 
     // initialisation et declaration du joueur
-    int w ;
-    int h ;
+    // int w ;
+    // int h ;
     SDL_Texture *obj = charger_image_transparente("ressources/Mario.bmp", ecran, 95,205,228) ;
     //Récupérer largeur et hargeur de la texture avec SDL_QueryTexture
-    SDL_QueryTexture(obj, NULL, NULL, &w, &h); 
-    SDL_Rect SrcR, DestR;
-    SrcR.x = 1;
-    SrcR.y = 1;
-    SrcR.w = MARIO_WIDTH ;
-    SrcR.h = MARIO_HEIGHT ;
-    DestR.x = 0;
-    DestR.y = 0;
-    DestR.w = SIZE_OBJ;
-    DestR.h = SIZE_OBJ;
-
+    // SDL_QueryTexture(obj, NULL, NULL, &w, &h); 
+    gameState.player.Src_Sprite.x = 1;
+    gameState.player.Src_Sprite.y = 1;
+    gameState.player.Src_Sprite.w = MARIO_WIDTH ;
+    gameState.player.Src_Sprite.h = MARIO_HEIGHT ;
+    gameState.player.Dest_Sprite.x = 0;
+    gameState.player.Dest_Sprite.y = line*SPRITE_SIZE - SIZE_OBJ;
+    gameState.player.Dest_Sprite.w = SIZE_OBJ;
+    gameState.player.Dest_Sprite.h = SIZE_OBJ;
+ 
+    //init data
+    init_data(&gameState);
 
     // Boucle principale
     while(!terminer)
@@ -73,15 +75,20 @@ int main (){
         SDL_RenderClear(ecran);
         
         //copier les images des sprites dans le renderer
-        SDL_RenderCopySprites(world.tab_platesFormes,ecran,pavage,tableau_Src_Sprites,nbSpriteAffichagable) ;
+        SDL_RenderCopySprites(tabSprite,ecran,pavage,tableau_Src_Sprites,nbSpriteAffichagable) ;
         
         //copier le joueur dans le renderer
-        SDL_RenderCopy(ecran, obj, &SrcR, &DestR); 
+        SDL_RenderCopy(ecran, obj, &(gameState.player.Src_Sprite), &(gameState.player.Dest_Sprite)); 
 
         //show everything on the window
         SDL_RenderPresent(ecran);
 
-        //SDL_PollEvent ...
+        //gestion des évènements
+        handle_events(&evenements, &gameState);
+
+
+        //ne supprime pas!!!!!!
+        /*
         SDL_PollEvent( &evenements );
         switch(evenements.type)
         {
@@ -105,6 +112,38 @@ int main (){
                 break; 
             }   
         }
+
+        Get a snapshot of the current state of the keyboard.
+        const Uint8 *state = SDL_GetKeyboardState(NULL);
+        if(state[SDL_SCANCODE_LEFT]){
+
+            gameState.player.Dest_Sprite.x -= MOVE_STEP;
+
+        }
+        if(state[SDL_SCANCODE_RIGHT]){
+
+            
+            gameState.player.Dest_Sprite.x += MOVE_STEP;
+
+        }
+
+        if(state[SDL_SCANCODE_UP]){
+
+            
+            gameState.player.Dest_Sprite.y -= MOVE_STEP;
+
+        }
+        if(state[SDL_SCANCODE_DOWN]){
+
+            
+            gameState.player.Dest_Sprite.y += MOVE_STEP;
+
+        }
+
+        SDL_Delay(10);
+
+        */
+
     }
 
     
@@ -113,6 +152,7 @@ int main (){
     SDL_DestroyTexture(pavage);
     SDL_DestroyTexture(obj);
     SDL_DestroyRenderer(ecran);
+    free(tabSprite);
     free(tableau_Src_Sprites);
     desallouer_tab_2D(tableauTerrain, line);
     // Quitter SDL
