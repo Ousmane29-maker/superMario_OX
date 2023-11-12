@@ -46,8 +46,14 @@ SDL_Texture* charger_image_transparente(const char* nomfichier,SDL_Renderer* ren
 void SDL_RenderCopySprites(sprite_t* tabSprite, SDL_Renderer* ecran, SDL_Texture* pavage, SDL_Rect* tableau_Src_Sprites,int nbSpriteAffichage);
 
 
+/**
+ * \brief La fonction gère les évènements ayant eu lieu et qui n'ont pas encore été traités
+ * \param event paramètre qui contient les événements
+ * \param gameState les données du monde
+ */
+void handle_events(SDL_Event* event, GameState* gameState);
 
-
+void init_data (GameState* gameState);
 
 
 
