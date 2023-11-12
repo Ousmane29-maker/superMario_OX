@@ -106,3 +106,49 @@ void SDL_RenderCopySprites(sprite_t* tabSprite, SDL_Renderer* ecran, SDL_Texture
         }
     }
 }
+
+void init_data (GameState* gameState){
+    //on n'est pas à la fin du jeu
+    gameState->gameover = 0;
+}
+
+
+void handle_events(SDL_Event *event, GameState *gameState){
+    // int done= 0;
+    // while(SDL_PollEvent(event)){
+    //     switch(event.type){
+    //         case SDL_WINDOWEVENT_CLOSE:
+
+    //     }
+
+    SDL_PollEvent(event);
+    
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+    if(state[SDL_SCANCODE_LEFT]){
+
+        gameState->player.Dest_Sprite.x -= MOVE_STEP;
+
+    }
+    if(state[SDL_SCANCODE_RIGHT]){
+
+            
+        gameState->player.Dest_Sprite.x += MOVE_STEP;
+
+    }
+
+    if(state[SDL_SCANCODE_UP]){
+
+            
+        gameState->player.Dest_Sprite.y -= MOVE_STEP;
+
+    }
+    if(state[SDL_SCANCODE_DOWN]){
+
+            
+        gameState->player.Dest_Sprite.y += MOVE_STEP;
+
+    }
+
+    
+}
