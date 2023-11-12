@@ -1,4 +1,4 @@
-#include <SDL2/SDL.h> // a supprimer
+#include <SDL2/SDL.h> 
 #ifndef WORLD_H
 #define WORLD_H
 
@@ -20,38 +20,39 @@
 /**
  * le pas de deplacement 
 */
-#define MOVE_STEP 5
-
-
-#define MARIO_HEIGHT 24
-
-#define MARIO_WIDTH 16
-
-
-
+#define MOVE_STEP 2
 
 /**
- * \brief Réprésentation du sprite à l'affichage graphique
+ * le hauteur du joueur
 */
+#define MARIO_HEIGHT 24
 
+/**
+ * la largeur du joueur
+*/
+#define MARIO_WIDTH 16
 
+/**
+ * \brief structure des sprites
+*/
 typedef struct sprite_s{
-    int x;/*!< Abscisse du sprite */
-    int y;/*!< Ordonnée du sprite */
-    int h;/*!< Hauteur du sprite */
-    int w;/*!< Largeur du sprite */
-}sprite_t ;
+    char caractere ;  
+    SDL_Rect Src_Sprite ; /*!< ressource du sprites */
+    SDL_Rect Dest_Sprite ; /*!< destination du sprites */
+
+} sprite_t ;
+
 
 /**
  * \brief Représentation du monde du jeu
 */
+typedef struct{
 
-typedef struct world_s{
+    sprite_t player; /*!< Champ qui correspond au joueur dans le jeu */
     int gameover; /*!< Champ indiquant si l'on est à la fin du jeu */
-    sprite_t player; /*!< Champ indiquant le joueur */
-    sprite_t* tab_platesFormes; /*!< Champ correspondant au tableau de plates-formes */
-}world_t ;
     
+} GameState ;
+
 
 
 /**
