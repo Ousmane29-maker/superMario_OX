@@ -18,6 +18,21 @@ int init_sdl(SDL_Window **window, SDL_Renderer **renderer, int width, int height
     return 0;
 }
 
+void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
+    ressources->terrain = "ressources/terrain.txt" ;
+    ressources->background= charger_image("ressources/fond.bmp", renderer) ;
+    ressources->playerTexture = charger_image("ressources/player.bmp", renderer) ;
+    ressources->endLevel = charger_image("ressources/endLevel.bmp", renderer) ;
+    ressources->pavage = charger_image("ressources/pavage.bmp", renderer) ;
+    
+}
+
+void clean_ressources(ressources_t *ressources){
+    SDL_DestroyTexture(ressources->pavage);
+    SDL_DestroyTexture(ressources->playerTexture);
+    SDL_DestroyTexture(ressources->background);
+}
+
 SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer){
     // Charger l'image depuis le fichier
     SDL_Surface* surface = SDL_LoadBMP(nomfichier);
@@ -79,76 +94,8 @@ SDL_Texture* charger_image_transparente(const char* nomfichier, SDL_Renderer* re
 }
 
 
-void SDL_RenderCopySprites(sprite_t* tabSprite, SDL_Renderer* ecran, SDL_Texture* pavage, SDL_Rect* tableau_Src_Sprites,int nbSpriteAffichage){
-    for(int i = 0; i < nbSpriteAffichage; i++){
-        switch (tabSprite[i].caractere)
-        {    case ' ':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[0], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '0' :
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[0], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '1':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[1], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '2':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[2], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '3':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[3], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '4':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[4], &tabSprite[i].Dest_Sprite) ;
-                break;  
-            case '5':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[5], &tabSprite[i].Dest_Sprite) ;
-                break;   
-        }
+void SDL_RenderCopyPlateFormes(world_t* world, SDL_Renderer* ecran, SDL_Texture* pavage,int nbre_plateforme){
+    for(int i = 0; i < nbre_plateforme; i++){
+        SDL_RenderCopy(ecran,pavage, &world->tab_platesFormes[i].src_rect, &world->tab_platesFormes[i].dest_rect);
     }
-}
-
-void init_data (GameState* gameState){
-    //on n'est pas à la fin du jeu
-    gameState->gameover = 0;
-}
-
-
-void handle_events(SDL_Event *event, GameState *gameState){
-    // int done= 0;
-    // while(SDL_PollEvent(event)){
-    //     switch(event.type){
-    //         case SDL_WINDOWEVENT_CLOSE:
-
-    //     }
-
-    SDL_PollEvent(event);
-    
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
-
-    if(state[SDL_SCANCODE_LEFT]){
-
-        gameState->player.Dest_Sprite.x -= MOVE_STEP;
-
-    }
-    if(state[SDL_SCANCODE_RIGHT]){
-
-            
-        gameState->player.Dest_Sprite.x += MOVE_STEP;
-
-    }
-
-    if(state[SDL_SCANCODE_UP]){
-
-            
-        gameState->player.Dest_Sprite.y -= MOVE_STEP;
-
-    }
-    if(state[SDL_SCANCODE_DOWN]){
-
-            
-        gameState->player.Dest_Sprite.y += MOVE_STEP;
-
-    }
-
-    
 }
