@@ -1,21 +1,30 @@
-#include <SDL2/SDL.h> // a supprimer
+
 #ifndef WORLD_H
 #define WORLD_H
+
+#include <SDL2/SDL.h> 
+#include <stdbool.h>
 
 /**
  * le nombre de sprites 
 */
-#define SPRITE_SIZE 32
+#define PLATFORM_SIZE 32
 
 /**
  * la taille d'un sprites
 */
-#define NOMBRE_TEXTURE 6
+#define NOMBRE_TEXTURE_PLATFORM 9
 
 /**
- * la taille du joueur
+ * la hauteur du joueur
 */
-#define SIZE_OBJ 80
+#define SPRITE_HEIGHT 64
+
+/**
+ * la largeur du joueur
+*/
+#define SPRITE_WIDTH 30
+
 
 /**
  * le pas de deplacement 
@@ -23,35 +32,53 @@
 #define MOVE_STEP 5
 
 
-#define MARIO_HEIGHT 24
+#define IMAGE_PLAYER_HEIGHT 50
 
-#define MARIO_WIDTH 16
+#define IMAGE_PLAYER_WIDTH 28
 
-
+/**
+ * Nombre de frames (images) dans l'animation du joueur. 
+*/
+#define NOMBRE_FRAMES_WALK 9
 
 
 /**
- * \brief Réprésentation du sprite à l'affichage graphique
+ * la gravite du jeu 
 */
+#define GRAVITY 1
 
-
-typedef struct sprite_s{
-    char caractere ;
-    int x;/*!< Abscisse du sprite */
-    int y;/*!< Ordonnée du sprite */
-    int h;/*!< Hauteur du sprite */
-    int w;/*!< Largeur du sprite */
-}sprite_t ;
 
 /**
- * \brief Représentation du monde du jeu
-*/
+ * @brief Structure représentant une plateforme statique pour l'affichage graphique.
+ */
+typedef struct fixedSprite_s {
+    SDL_Rect src_rect; /**< Rectangle source représentant la plateforme (position et dimensions dans l'image source). */
+    SDL_Rect dest_rect; /**< Rectangle de destination représentant la position et les dimensions sur l'écran. */
+} fixedSprite_t;
 
-typedef struct world_s{
-    int gameover; /*!< Champ indiquant si l'on est à la fin du jeu */
-    sprite_t player; /*!< Champ indiquant le joueur */
-    sprite_t* tab_platesFormes; /*!< Champ correspondant au tableau de plates-formes */
-}world_t ;
+/**
+ * @brief Structure représentant un sprite pour l'affichage graphique avec animation.
+ */
+typedef struct sprite_s {
+    SDL_Rect* walk_rects; /**< Tableau de rectangles source représentant les différentes images du sprite en marchant. */
+    SDL_Rect* walk_with_weapeon_rects ; /**< Tableau de rectangles source représentant les différentes images du sprite en marchant. */
+    SDL_Rect dest_rect; /**< Rectangle de destination représentant la position et les dimensions sur l'écran. */
+    int weapeon ; /**< champ indiquant si le personnage est armee ou pas */
+    int current_frame_walk; /**< Frame walk actuelle affichée. */
+    int vers_la_droite; /**< Champ indiquant si le sprite va vers la droite  */
+} sprite_t;
+
+/**
+ * @brief Représentation du monde du jeu.
+ */
+typedef struct world_s {
+    char** tab_terrain ; /**< Champ representant le tableau de caracteres */
+    int gameOver ; /**< Champ indiquant si l'on est à la fin du jeu. */
+    int gravity ; /**< Champ indiquant la gravite */
+    sprite_t player; /**< Champ indiquant le joueur. */
+    fixedSprite_t* tab_platesFormes; /**< Champ correspondant au tableau de plates-formes. */
+    int nbPlateForme ; /**< Champ correspondant au nombre de plates-formes. */
+} world_t;
     
 
 
@@ -117,23 +144,101 @@ void ecrire_fichier(const char* nomFichier, char** tab, int n, int m);
 
 
 /**
+* @param tab_terrain tableau de caracteres
 * @param n le nombre de lignes
 * @param m le nombre de colonne
-* retourne le nombre de caracteres affichable ;
+* @return le nombre de plateformes dans le fichiers text
 */
-int nbSpriteAffichage(int n, int m);
+int nbrPlateformes(char** tab_terrain, int n, int m) ;
+
 
 /**
-* @param tab tableau de fichier
+* @return un tableau de SDL_Rect initialise representant les src associe a chaque plateformes (image dans pavage)
+*/
+SDL_Rect* init_tab_src_pavage() ;
+
+/**
+* @param tab_terrain tableau de caracteres
 * @param n le nombre de lignes
 * @param m le nombre de colonne
-* retourne le tableau de sprites initialise selone le tableau fichier.txt;
+* @param tab_plateFormes le tableau de platform
+* initialise src_rect du tab_plateFormes
 */
-sprite_t* initialiser_tabSprite(char**tab, int n, int m);
+void init_src_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSprite_t* tab_plateFormes);
 
 
+/**
+* @param tab_terrain tableau de caracteres
+* @param n le nombre de lignes
+* @param m le nombre de colonne
+* @param tab_plateFormes le tableau de platform
+* initialise dest_rect du tab_plateFormes
+*/
+void init_dest_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSprite_t* tab_plateFormes) ;
 
 
+/**
+* @param tab_plateFormes le tableau de plateformes
+* @param tab_terrain tableau de caracteres
+* @param n le nombre de lignes
+* @param m le nombre de colonne
+* @return le tableau de plateformes initialise
+*/
+void init_tab_platesFormes(fixedSprite_t* tab_plateFormes, char ** tab_terrain, int n, int m) ;
 
+/**
+* \param player pointeur vers sprite_t
+* \param x l'abscisse initial du joueur 
+* \param y l'ordonne intial du joueur
+* \brief initialise le joueur
+*/
+void init_player(sprite_t *player, double x, double y);
+
+/**
+* \param world pointeur vers world_t
+* \param nomFichier le nom du fichier 
+* \brief initialise le monde
+*/
+void init_world(world_t* world, const char* nomFichier);
+
+
+/**
+ * \brief La fonction indique si le jeu est fini en fonction des données du monde
+ * \param world les données du monde
+ * \return 1 si le jeu est fini, 0 sinon
+ */
+int is_game_over(world_t *world) ;
+
+/**
+ * \brief la fonction gere les evenements lies a la souris et au clavier
+ * \param world les données du monde
+ * \param event evenements
+ * \return 1 si le jeu est fini, 0 sinon
+ */
+void handle_events(world_t *world, SDL_Event *event) ;
+
+/**
+ * \brief La fonction permet de mettre a jour les donnes du monde
+ * \param world les données du monde
+ */
+void update_data(world_t *world) ;
+
+/**
+ * \brief la fonction gere les limites a gauche , droite , haut , bas du jeu
+ * \param sprite le sprite a gerer
+ * \param width la largeur de l'ecran
+ * \param height la hauteur de l'ecran
+*/
+void sprite_boundary_handling(sprite_t *sprite, int width, int height);
+
+
+/**
+* \brief la fonction indique si le sprite est en collision avec une plateforme (du tableau) qui est a sa droite 
+* \param sprite le sprite a 
+* \param tab_platesFormes le tableau de plateforme
+* \param nbPlateForme le nombre de plateforme
+* \return vrai s'ils sont en collision
+*/
+bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme);
 
 #endif

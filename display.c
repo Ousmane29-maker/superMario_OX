@@ -18,6 +18,15 @@ int init_sdl(SDL_Window **window, SDL_Renderer **renderer, int width, int height
     return 0;
 }
 
+void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
+    ressources->terrain = "ressources/terrain.txt" ;
+    ressources->background= charger_image("ressources/fond.bmp", renderer) ;
+    ressources->playerTexture = charger_image("ressources/player.bmp", renderer) ;
+    ressources->endLevel = charger_image("ressources/endLevel.bmp", renderer) ;
+    ressources->pavage = charger_image("ressources/pavage.bmp", renderer) ;
+    
+}
+
 SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer){
     // Charger l'image depuis le fichier
     SDL_Surface* surface = SDL_LoadBMP(nomfichier);
@@ -79,30 +88,34 @@ SDL_Texture* charger_image_transparente(const char* nomfichier, SDL_Renderer* re
 }
 
 
-void SDL_RenderCopySprites(sprite_t* tabSprite, SDL_Renderer* ecran, SDL_Texture* pavage, SDL_Rect* tableau_Src_Sprites,int nbSpriteAffichage){
-    for(int i = 0; i < nbSpriteAffichage; i++){
-        switch (tabSprite[i].caractere)
-        {    case ' ':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[0], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '0' :
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[0], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '1':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[1], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '2':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[2], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '3':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[3], &tabSprite[i].Dest_Sprite) ;
-                break;
-            case '4':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[4], &tabSprite[i].Dest_Sprite) ;
-                break;  
-            case '5':
-                SDL_RenderCopy(ecran,pavage,&tableau_Src_Sprites[5], &tabSprite[i].Dest_Sprite) ;
-                break;   
+void SDL_RenderCopyPlateFormes(world_t* world, SDL_Renderer* ecran, SDL_Texture* pavage,int nbre_plateforme){
+    for(int i = 0; i < nbre_plateforme; i++){
+        SDL_RenderCopy(ecran,pavage, &world->tab_platesFormes[i].src_rect, &world->tab_platesFormes[i].dest_rect);
+    }
+}
+
+
+void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources){
+    SDL_RenderClear(renderer);
+    // le fond
+    SDL_RenderCopy(renderer, ressources->background,NULL, NULL);
+    // Copier les platformes dans le renderer
+    SDL_RenderCopyPlateFormes(world, renderer, ressources->pavage, world->nbPlateForme);
+    // Copier le joueur dans le renderer
+    if(world->player.weapeon == 0){
+        if(world->player.vers_la_droite == 1){
+            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect);
+        }else{
+            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+        }
+    }else{
+        if(world->player.vers_la_droite == 1){
+            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect);
+        }else{
+            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
         }
     }
+    
+    // Afficher tout dans la fenêtre
+    SDL_RenderPresent(renderer);
 }

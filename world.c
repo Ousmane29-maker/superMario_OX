@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include "world.h"
 
 
@@ -61,21 +62,35 @@ void afficher_tab_2D(char** tab, int n, int m){
 * @param int* nbCol
 * compter le nombre max de lignes (nbLig) et de colonnes (nbCol) dans le fichier dont le nom est nomFichier.
 */
-void taille_fichier(const char* nomFichier, int* nbLig, int* nbCol) {
-    FILE* fichier = fopen(nomFichier, "r");
-    if (fichier == NULL) {
-        exit(EXIT_FAILURE);
-    }
+void taille_fichier(const char* nomFichier, int* nbLig, int* nbCol){
+    *nbLig = 0 ;
+    *nbCol = 0 ;
+    int nbColAct = 0 ;
+    char c = ' ' ;
+    FILE *fic =fopen(nomFichier,"r") ;
+    if(fic == NULL){
+        perror("Error opening file") ;
+    }else{
+        c = fgetc(fic) ;
+        while(c != EOF){
+            // si on est pas a la fin du fichier 
+            if(c == '\n'){ //on considere que '\n' est un caractere
+                *nbLig = *nbLig + 1 ; // a la fin de la ligne on incremente le nombre de ligne 
+                *nbCol = (*nbCol > nbColAct) ? *nbCol : nbColAct; // le nombre de colonne est egale au maximum du nombre de colonne precedent et celui d'actuel
+                nbColAct = 0 ; // on remet le compteur a 0
+            }else if (c != '\r') {
+                nbColAct ++ ;
+            }
+            c = fgetc(fic) ;
+        }
+        // Vérifier si la dernière ligne se termine par un retour à la ligne
+        if (nbColAct > 0) {
+            *nbLig = *nbLig + 1;
+            *nbCol = (*nbCol > nbColAct) ? *nbCol : nbColAct ;
 
         }
     }
-
-    // After the loop, make sure to check the last line for maximum columns
-    maxColonne = (colonne > maxColonne) ? colonne : maxColonne;
-
-    fclose(fichier);
-    *nbLig = ligne;
-    *nbCol = maxColonne; // Set nbCol to the maximum column count
+    fclose(fic) ;
 }
 
 
@@ -97,11 +112,10 @@ char** lire_fichier(const char* nomFichier) {
     
     int ligne = 0;
     int colonne = 0;
-    char c;
-
+    int c;
     while ((c = fgetc(fichier)) != EOF) {
         if (c == '\n' || c == '\r') {
-            if(colonne!=0){
+            if(colonne != 0){
                 ligne++;
                 colonne = 0;
             }
@@ -109,7 +123,8 @@ char** lire_fichier(const char* nomFichier) {
             tab[ligne][colonne] = c;
             colonne++;
         }
-    }
+
+    }      
     fclose(fichier);
     return tab;
 }
@@ -149,38 +164,256 @@ void ecrire_fichier(const char* nomFichier, char** tab, int n, int m){
 }
 
 
-int nbSpriteAffichage(int n, int m){
+int nbrPlateformes(char** tab_terrain, int n, int m){
     int compteur = 0;
     for(int i = 0; i < n; i++){
         for(int j = 0; j < m; j++){
-
-            compteur++;
+            //'0' et ' ' ne sont pas des platformes mais il represente le background
+            if(tab_terrain[i][j] != '0' && tab_terrain[i][j] != ' '){
+                compteur++;
+            }
         }
     }
     return compteur;
 }
 
-sprite_t* initialiser_tabSprite(char**tab, int n, int m){
-    sprite_t* tabSprites = (sprite_t*)malloc(nbSpriteAffichage(n, m) * sizeof(sprite_t));
-    int x, y, indiceSprite;
+
+SDL_Rect* init_tab_src_pavage(){
+    SDL_Rect *tab_src = malloc(NOMBRE_TEXTURE_PLATFORM * sizeof(SDL_Rect)) ;
+    int x,y ;
     y = 0;
-    indiceSprite = 0;
+    x = 0;
+    for(int i = 0; i < NOMBRE_TEXTURE_PLATFORM - 1; i++){
+        tab_src[i].x = x;
+        tab_src[i].y = y;
+        tab_src[i].h = PLATFORM_SIZE ;
+        tab_src[i].w = PLATFORM_SIZE ;
+
+        if(x == 5*PLATFORM_SIZE){
+            x = 7 * PLATFORM_SIZE ; // on saute des textures qu'on n'a pas besoin
+        }
+        if(x == 10*PLATFORM_SIZE){
+            x = 0; 
+            y = PLATFORM_SIZE ;
+        }
+        x += PLATFORM_SIZE; 
+    }
+    return tab_src ;
+}
+
+void init_src_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSprite_t* tab_plateFormes){
+    SDL_Rect *tab_src = init_tab_src_pavage() ;
+    int indice_PlateForme = 0 ;
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){
+            switch (tab_terrain[i][j])
+            {
+            case '1' :
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[1];
+                indice_PlateForme ++ ;
+                break;
+            case '2' :
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[2];
+                indice_PlateForme ++ ;
+                break;
+            case '3' :
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[3];
+                indice_PlateForme ++ ;
+                break;
+            case '4' :
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[4];
+                indice_PlateForme ++ ;
+                break;
+            case '5' :
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[5];
+                indice_PlateForme ++ ;
+                break;
+            case '6' :
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[6];
+                indice_PlateForme ++ ;
+                break;
+            case '7' :
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[7];
+                indice_PlateForme ++ ;
+                break;            
+            case '8' :
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[8];
+                indice_PlateForme ++ ;
+                break;                                            
+            default:
+                break;
+            }
+        }
+    }
+    free(tab_src) ;
+}
+
+void init_dest_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSprite_t* tab_plateFormes){
+    int x,y,indice_PlateForme ;
+    y = 0;
+    indice_PlateForme = 0;
     for(int i = 0; i < n; i++){
         x = 0;
         for(int j = 0; j < m; j++){
-            //savegarde de 0 a 4 a caractere
-            tabSprites[indiceSprite].caractere = tab[i][j];
-            tabSprites[indiceSprite].Dest_Sprite.x = x;
-            tabSprites[indiceSprite].Dest_Sprite.y = y;
-            tabSprites[indiceSprite].Dest_Sprite.w = SPRITE_SIZE;
-            tabSprites[indiceSprite].Dest_Sprite.h = SPRITE_SIZE;
-            indiceSprite++;
-            x += SPRITE_SIZE;
+            if(tab_terrain[i][j] != '0' && tab_terrain[i][j] != ' '){
+                tab_plateFormes[indice_PlateForme].dest_rect.x = x;
+                tab_plateFormes[indice_PlateForme].dest_rect.y = y;
+                tab_plateFormes[indice_PlateForme].dest_rect.w = PLATFORM_SIZE;
+                tab_plateFormes[indice_PlateForme].dest_rect.h = PLATFORM_SIZE;
+                indice_PlateForme++;
+            }
+            x += PLATFORM_SIZE;
         }
+        y += PLATFORM_SIZE;    
     }
 
-    return tabSprites;
+}
+
+void init_tab_platesFormes(fixedSprite_t* tab_plateFormes, char ** tab_terrain, int n, int m){
+    // int nbre_plateforme = nbrPlateformes(tab_terrain) ;
+    //tab_plateFormes = (platform_t*) malloc(nbre_plateforme * sizeof(platform_t)) ;
+    init_src_rect_tab_plateFormes(tab_terrain, n, m, tab_plateFormes);
+    init_dest_rect_tab_plateFormes(tab_terrain, n, m, tab_plateFormes) ;
+}
+
+void init_player(sprite_t *player, double x, double y) {
+    player->walk_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
+    int x_src , y_src ;
+    x_src = 20 ;
+    y_src = 11 * (IMAGE_PLAYER_HEIGHT + 15 ) ; // la 11eme ligne dans l'image du joueur (15 pixel entre chaque ligne)
+    for(int i = 0 ; i <  NOMBRE_FRAMES_WALK; i++){
+        player->walk_rects [i].x = x_src ;
+        player->walk_rects [i].y = y_src ;
+        player->walk_rects [i].w = IMAGE_PLAYER_WIDTH;
+        player->walk_rects [i].h = IMAGE_PLAYER_HEIGHT;
+        x_src = x_src + 64 ;
+    }
+
+    player->walk_with_weapeon_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
+    x_src = 45 ;
+    y_src = 1770;
+    for(int i = 0 ; i <  NOMBRE_FRAMES_WALK; i++){
+        player->walk_with_weapeon_rects [i].x = x_src ;
+        player->walk_with_weapeon_rects [i].y = y_src ;
+        player->walk_with_weapeon_rects [i].w = 60;
+        player->walk_with_weapeon_rects [i].h = IMAGE_PLAYER_HEIGHT;
+        x_src = x_src + 129 ;
+    }
+    
+    player->dest_rect.x = x ;
+    player->dest_rect.y = y ;
+    player->dest_rect.w = SPRITE_WIDTH;
+    player->dest_rect.h = SPRITE_HEIGHT ;
+
+    player->current_frame_walk = 0 ;
+    player->vers_la_droite = 1 ;
+}
+
+void init_world(world_t* world, const char* nomFichier){
+    world->gameOver = 0 ;
+    world->player.weapeon = 0 ;
+    world->gravity = GRAVITY ;
+    int nbLig, nbCol;
+    taille_fichier(nomFichier, &nbLig, &nbCol);
+    world->tab_terrain = lire_fichier(nomFichier) ; // allocation memoire inclu
+    world->nbPlateForme = nbrPlateformes(world->tab_terrain, nbLig, nbCol) ;
+    world->tab_platesFormes = malloc(world->nbPlateForme * sizeof(fixedSprite_t)) ;
+    init_tab_platesFormes(world->tab_platesFormes, world->tab_terrain, nbLig, nbCol) ;
+    init_player(&world->player,0,(nbLig * PLATFORM_SIZE - PLATFORM_SIZE) - SPRITE_HEIGHT) ;
+}
+
+int is_game_over(world_t *world){
+    return world->gameOver;
+}
+
+void handle_events(world_t *world, SDL_Event *event) {
+    // Gérer les événements SDL
+    SDL_PollEvent(event);
+    switch (event->type) {
+        case SDL_QUIT:
+            world->gameOver = 1;
+            break;
+        case SDL_KEYDOWN:
+            switch (event->key.keysym.sym) {
+                case SDLK_UP:
+                    world->player.dest_rect.y -= MOVE_STEP;
+                    break;
+                case SDLK_DOWN:
+                    world->player.dest_rect.y += MOVE_STEP;
+                    break;
+                case SDLK_LEFT:
+                    world->player.dest_rect.x -= MOVE_STEP;
+                    if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+                        world->player.current_frame_walk = 0 ;
+                    }else{
+                        world->player.current_frame_walk ++ ;
+                    }
+                    world->player.vers_la_droite= 0 ;
+                    break;
+                case SDLK_RIGHT:
+                    world->player.dest_rect.x += MOVE_STEP;
+                    if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+                        world->player.current_frame_walk = 0 ;
+                    }else{
+                        world->player.current_frame_walk ++ ;
+                    }
+                    world->player.vers_la_droite = 1 ;
+                      
+                    break;
+
+                case SDLK_w :
+                if(world->player.weapeon == 0 ){
+                   world->player.weapeon = 1 ; 
+                    world->player.dest_rect.w = 60 ;
+
+                }else{
+                    world->player.weapeon = 0 ;
+                    world->player.dest_rect.w = SPRITE_WIDTH ;
+                }  
+            }
+                break;    
+        }
+}
+
+void update_data(world_t *world){
+    sprite_boundary_handling(&world->player, 1900, 800) ; // faut mettre la taille normale de l'ecran !!!!!!!
+    // if(is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
+    //     world->gravity = 0 ;
+    // }else{
+    //     world->gravity = GRAVITY ;
+    // }
+    // //world->player.dest_rect.y += world->gravity;
+}    
+    
+
+void sprite_boundary_handling(sprite_t *sprite, int width, int height){
+    //Limites en haut
+    if(sprite->dest_rect.y < 0){
+        sprite->dest_rect.y = 0 ;
+    }
+    //En bas
+    if(sprite->dest_rect.y + sprite->dest_rect.h > height){
+        sprite->dest_rect.y = height ;
+    }
+    //A gauche
+    if(sprite->dest_rect.x < 0){
+        sprite->dest_rect.x = 0 ;
+    }//A droite
+    if(sprite->dest_rect.x + sprite->dest_rect.w > width){
+        sprite->dest_rect.x = width ;
+    }
 }
 
 
-
+// bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme)
+// {
+//     for(int i = 0; i < nbPlateForme; i++)
+//     {
+//         if(sprite->dest_rect.x + sprite->dest_rect.w >= tab_platesFormes[i].dest_rect.x && 
+//             abs(sprite->dest_rect.y + sprite->dest_rect.h/2 - tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h/2 ) < (sprite->dest_rect.h + tab_platesFormes[i].dest_rect.h) / 2)
+//         {
+//             return true ;
+//         }
+//     }
+//     return false ;
+// }
