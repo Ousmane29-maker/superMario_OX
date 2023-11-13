@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "world.h"
 
+
 /**
 * @param int n
 * @param int m
@@ -66,18 +67,6 @@ void taille_fichier(const char* nomFichier, int* nbLig, int* nbCol) {
         exit(EXIT_FAILURE);
     }
 
-    int ligne = 0;
-    int colonne = 0;
-    int maxColonne = 0; // Track the maximum column count
-    int c;
-
-    while ((c = fgetc(fichier)) != EOF) {
-        if (c == '\n') {
-            ligne++;
-            maxColonne = (colonne > maxColonne) ? colonne : maxColonne; // Update maxColonne if needed
-            colonne = 0;
-        } else {
-            colonne++;
         }
     }
 
@@ -91,22 +80,15 @@ void taille_fichier(const char* nomFichier, int* nbLig, int* nbCol) {
 
 
 
-/**
-* @param const char* nomFichier
-* @return lire un fichier dont le nom est nomFichier, et retourner le tableau qui contient les caractères du fichier tel qu’une ligne du tableau correspond à une ligne du fichier.
-*/
-
 char** lire_fichier(const char* nomFichier) {
     FILE* fichier = fopen(nomFichier, "r");
     if (fichier == NULL) {
         printf("Erreur lors de l'ouverture du fichier %s.\n", nomFichier);
         return NULL;
     }
-    
     int nbLig, nbCol;
     taille_fichier(nomFichier, &nbLig, &nbCol);
     char** tab = allouer_tab_2D(nbLig, nbCol);
-
     if (tab == NULL) {
         fprintf(stderr, "Erreur lors de l'allocation du tableau.\n");
         fclose(fichier);
@@ -118,7 +100,6 @@ char** lire_fichier(const char* nomFichier) {
     char c;
 
     while ((c = fgetc(fichier)) != EOF) {
-        
         if (c == '\n' || c == '\r') {
             if(colonne!=0){
                 ligne++;
@@ -133,15 +114,6 @@ char** lire_fichier(const char* nomFichier) {
     return tab;
 }
 
-
-/**
-* @param char** tab
-* @param int n
-* @param int m
-* @param char ancien
-* @param char nouveau
-* @return un nouveau tableau, dans lequel toutes les occurrences du caractère ancien sont remplacées par le caractère nouveau.
-*/
 char** modifier_caractere(char** tab, int n, int m, char ancien, char nouveau){
     char** T = allouer_tab_2D(n, m);
     for(int i = 0; i < n; i++){
@@ -160,13 +132,6 @@ char** modifier_caractere(char** tab, int n, int m, char ancien, char nouveau){
 }
 
 
-/**
-* @param char** tab
-* @param int n
-* @param int m
-* @param const char* nomFichier
-* Écrire le tableau tab de taille n × m dans un fichier dont le nom est nomFichier.
-*/
 void ecrire_fichier(const char* nomFichier, char** tab, int n, int m){
     FILE* fichier = NULL;
     fichier = fopen(nomFichier, "w");
@@ -212,7 +177,6 @@ sprite_t* initialiser_tabSprite(char**tab, int n, int m){
             indiceSprite++;
             x += SPRITE_SIZE;
         }
-        y += SPRITE_SIZE;    
     }
 
     return tabSprites;

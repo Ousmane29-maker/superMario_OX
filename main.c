@@ -109,20 +109,9 @@ int main (){
 
     
 
-    // Libérer de la mémoire
-    SDL_DestroyTexture(pavage);
-    SDL_DestroyTexture(obj);
-    SDL_DestroyRenderer(ecran);
-    free(tableau_Src_Sprites);
-    desallouer_tab_2D(tableauTerrain, line);
     // Quitter SDL
     SDL_DestroyWindow(fenetre);
     SDL_Quit();
     
     return 0;
 }
-
-
-
-
-
