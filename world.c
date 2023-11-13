@@ -380,19 +380,19 @@ void limite_haut(sprite_t* sprite){
 
 }
 
-void limite_bas(sprite_t* sprite, int nbLig){
-    if(sprite->dest_rect.y + IMAGE_PLAYER_HEIGHT > nbLig){
+void limite_bas(sprite_t* sprite, int screen_Height){
+    if(sprite->dest_rect.y + IMAGE_PLAYER_HEIGHT > screen_Height){
 
-        sprite->dest_rect.y = nbLig - IMAGE_PLAYER_HEIGHT;
+        sprite->dest_rect.y = screen_Height - IMAGE_PLAYER_HEIGHT;
 
 
     }
 
 }
 
-void update_data(world_t* world, int nbLig){
+void update_data(world_t* world, int screen_Height){
     limite_haut(&world->player);
-    limite_bas(&world->player, nbLig);
+    limite_bas(&world->player, screen_Height);
 
 }
 
