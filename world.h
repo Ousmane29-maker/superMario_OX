@@ -1,58 +1,79 @@
-#include <SDL2/SDL.h> 
+
 #ifndef WORLD_H
 #define WORLD_H
+
+#include <SDL2/SDL.h> 
 
 /**
  * le nombre de sprites 
 */
-#define SPRITE_SIZE 32
+#define PLATFORM_SIZE 32
 
 /**
  * la taille d'un sprites
 */
-#define NOMBRE_TEXTURE 6
+#define NOMBRE_TEXTURE_PLATFORM 9
 
 /**
  * la taille du joueur
 */
-#define SIZE_OBJ 80
+#define SPRITE_SIZE 80
 
 /**
  * le pas de deplacement 
 */
-#define MOVE_STEP 2
+#define MOVE_STEP 5
+
+
+#define IMAGE_PLAYER_HEIGHT 64
+
+#define IMAGE_PLAYER_WIDTH 64
 
 /**
- * le hauteur du joueur
+ * Nombre de frames (images) dans l'animation du joueur. 
 */
-#define MARIO_HEIGHT 24
+#define NOMBRE_FRAMES_WALK 9
 
 /**
- * la largeur du joueur
+ * Abscisse initiale du joueur. 
 */
-#define MARIO_WIDTH 16
+#define ABS_PLAYER_INITIAL 0
 
 /**
- * \brief structure des sprites
+ * Ordonne initiale du joueur. 
 */
-typedef struct sprite_s{
-    char caractere ;  
-    SDL_Rect Src_Sprite ; /*!< ressource du sprites */
-    SDL_Rect Dest_Sprite ; /*!< destination du sprites */
-
-} sprite_t ;
+#define ORD_PLAYER_INITIAL 0
 
 
 /**
- * \brief Représentation du monde du jeu
-*/
-typedef struct{
+ * @brief Structure représentant une plateforme statique pour l'affichage graphique.
+ */
+typedef struct fixedSprite_s {
+    SDL_Rect src_rect; /**< Rectangle source représentant la plateforme (position et dimensions dans l'image source). */
+    SDL_Rect dest_rect; /**< Rectangle de destination représentant la position et les dimensions sur l'écran. */
+} fixedSprite_t;
 
-    sprite_t player; /*!< Champ qui correspond au joueur dans le jeu */
-    int gameover; /*!< Champ indiquant si l'on est à la fin du jeu */
+/**
+ * @brief Structure représentant un sprite pour l'affichage graphique avec animation.
+ */
+typedef struct sprite_s {
+    SDL_Rect* walk_rects; /**< Tableau de rectangles source représentant les différentes images du sprite en marchant. */
+    SDL_Rect dest_rect; /**< Rectangle de destination représentant la position et les dimensions sur l'écran. */
+    int current_frame_walk; /**< Frame walk actuelle affichée. */
+    int vers_la_droite; /**< Champ indiquant si le sprite va vers la droite  */
+} sprite_t;
+
+/**
+ * @brief Représentation du monde du jeu.
+ */
+typedef struct world_s {
+    char** tab_terrain ; /**< Champ representant le tableau de caracteres */
+    int gameOver; /**< Champ indiquant si l'on est à la fin du jeu. */
+    sprite_t player; /**< Champ indiquant le joueur. */
+    fixedSprite_t* tab_platesFormes; /**< Champ correspondant au tableau de plates-formes. */
+    int nbPlateForme ; /**< Champ correspondant au nombre de plates-formes. */
+} world_t;
     
-} GameState ;
-
 
 
 /**
@@ -117,21 +138,94 @@ void ecrire_fichier(const char* nomFichier, char** tab, int n, int m);
 
 
 /**
+* @param tab_terrain tableau de caracteres
 * @param n le nombre de lignes
 * @param m le nombre de colonne
-* retourne le nombre de caracteres affichable ;
+* @return le nombre de plateformes dans le fichiers text
 */
-int nbSpriteAffichage(int n, int m);
+int nbrPlateformes(char** tab_terrain, int n, int m) ;
+
 
 /**
-* @param tab tableau de fichier
+* @return un tableau de SDL_Rect initialise representant les src associe a chaque plateformes (image dans pavage)
+*/
+SDL_Rect* init_tab_src_pavage() ;
+
+/**
+* @param tab_terrain tableau de caracteres
 * @param n le nombre de lignes
 * @param m le nombre de colonne
-* retourne le tableau de sprites initialise selone le tableau fichier.txt;
+* @param tab_plateFormes le tableau de platform
+* initialise src_rect du tab_plateFormes
 */
-sprite_t* initialiser_tabSprite(char**tab, int n, int m);
+void init_src_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSprite_t* tab_plateFormes);
 
 
+/**
+* @param tab_terrain tableau de caracteres
+* @param n le nombre de lignes
+* @param m le nombre de colonne
+* @param tab_plateFormes le tableau de platform
+* initialise dest_rect du tab_plateFormes
+*/
+void init_dest_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSprite_t* tab_plateFormes) ;
+
+
+/**
+* @param tab_plateFormes le tableau de plateformes
+* @param tab_terrain tableau de caracteres
+* @param n le nombre de lignes
+* @param m le nombre de colonne
+* @return le tableau de plateformes initialise
+*/
+void init_tab_platesFormes(fixedSprite_t* tab_plateFormes, char ** tab_terrain, int n, int m) ;
+
+/**
+* \param player pointeur vers sprite_t
+* \brief initialise le joueur
+*/
+void init_player(sprite_t *player) ;
+
+/**
+* \param world pointeur vers world_t
+* \param nomFichier le nom du fichier 
+* \brief initialise le monde
+*/
+void init_world(world_t* world, const char* nomFichier);
+
+
+/**
+ * \brief La fonction indique si le jeu est fini en fonction des données du monde
+ * \param world les données du monde
+ * \return 1 si le jeu est fini, 0 sinon
+ */
+int is_game_over(world_t *world) ;
+
+/**
+ * \brief La fonction gère les évènements ayant eu lieu et qui n'ont pas encore été traités
+ * \param event paramètre qui contient les événements
+ * \param world les données du monde
+ */
+void handle_events(SDL_Event* event, world_t* world);
+
+/**
+ * \brief La fonction qui veillera à ce que si le vaisseau commence à dépasser la limite haut
+ * \param sprite Le sprite
+ */
+void limite_haut(sprite_t* sprite);
+
+/**
+ * \brief La fonction qui veillera à ce que si le vaisseau commence à dépasser la limite bas
+ * \param sprite Le sprite
+ */
+void limite_bas(sprite_t* sprite , int nbLig);
+    
+
+/**
+ * \brief La fonction met à jour les données en tenant compte de la physique du monde
+ * \param world les données du monde
+ */
+void update_data(world_t* world, int nbLig);
 
 
 
