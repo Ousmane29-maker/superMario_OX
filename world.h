@@ -19,7 +19,7 @@
 /**
  * la hauteur du joueur
 */
-#define SPRITE_HEIGHT 64
+#define SPRITE_HEIGHT 50
 
 /**
  * la largeur du joueur
@@ -215,7 +215,7 @@ int is_game_over(world_t *world) ;
  * \param world les données du monde
  * \param event evenements
  */
-void handle_events(SDL_Event *event, world_t* world) ;
+void handle_events(world_t* world, SDL_Event *event) ;
 
 
 /**
@@ -230,6 +230,8 @@ void limite_haut(sprite_t* sprite);
  * \param screen_Height le hauteur d'ecran
  */
 void limite_bas(sprite_t* sprite , int screen_Height);
+
+void limite_gauche(sprite_t* sprite);
     
 
 /**
@@ -237,7 +239,7 @@ void limite_bas(sprite_t* sprite , int screen_Height);
  * \param world les données du monde
  * \param screen_Height le hauteur d'ecran
  */
-void update_data(world_t* world, int screen_Height);
+void update_data(world_t* world, int screen_Height) ;
 
 
 /**
@@ -248,5 +250,11 @@ void update_data(world_t* world, int screen_Height);
 * \return vrai s'ils sont en collision
 */
 bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme);
+
+bool is_colliding_left_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
+
+bool is_colliding_down_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
+
+bool is_colliding_up_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
 
 #endif

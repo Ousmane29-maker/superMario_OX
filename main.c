@@ -23,12 +23,12 @@ int main() {
     //Boucle principale
     while (!is_game_over(&world)) {
         // Gérer les événements SDL
-        handle_events(&events,&world);
+        handle_events(&world, &events);
         // Mise a jour des donnees
         update_data(&world, nbLig*PLATFORM_SIZE);
         // Rafraîchissement de l'écran
         refresh_graphics(ecran, &world, &ressources) ;
-        // Attendre environ 16 millisecondes 
+        // Attendre environ 5 millisecondes 
         SDL_Delay(5); 
     }
 

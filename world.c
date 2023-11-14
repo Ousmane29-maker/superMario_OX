@@ -326,7 +326,8 @@ int is_game_over(world_t *world){
     return world->gameOver;
 }
 
-/*
+
+
 void handle_events(world_t *world, SDL_Event *event) {
     // Gérer les événements SDL
     SDL_PollEvent(event);
@@ -337,29 +338,44 @@ void handle_events(world_t *world, SDL_Event *event) {
         case SDL_KEYDOWN:
             switch (event->key.keysym.sym) {
                 case SDLK_UP:
+                if(!is_colliding_up_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
                     world->player.dest_rect.y -= MOVE_STEP;
+                }
+                    printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
                     break;
                 case SDLK_DOWN:
-                    world->player.dest_rect.y += MOVE_STEP;
+                    if(!is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
+                        world->player.dest_rect.y += MOVE_STEP;
+                    }
+                    printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
                     break;
                 case SDLK_LEFT:
-                    world->player.dest_rect.x -= MOVE_STEP;
-                    if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
-                        world->player.current_frame_walk = 0 ;
-                    }else{
-                        world->player.current_frame_walk ++ ;
-                    }
-                    world->player.vers_la_droite= 0 ;
+                    if(!is_colliding_left_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
+                        world->player.dest_rect.x -= MOVE_STEP;
+                        if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+                            world->player.current_frame_walk = 0 ;
+                        }else{
+                            world->player.current_frame_walk ++ ;
+                        }
+                        world->player.vers_la_droite = 0 ;
+                        printf("pas de collision \n") ;
+                    }    
+                    printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
                     break;
                 case SDLK_RIGHT:
-                    world->player.dest_rect.x += MOVE_STEP;
-                    if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
-                        world->player.current_frame_walk = 0 ;
+                    if(!is_colliding_right_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
+                        world->player.dest_rect.x += MOVE_STEP;
+                        if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+                            world->player.current_frame_walk = 0 ;
+                        }else{
+                            world->player.current_frame_walk ++ ;
+                        }
+                        world->player.vers_la_droite = 1 ;
+                        printf("pas de collision \n") ;
                     }else{
-                        world->player.current_frame_walk ++ ;
+
                     }
-                    world->player.vers_la_droite = 1 ;
-                      
+                    printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
                     break;
 
                 case SDLK_w :
@@ -375,63 +391,66 @@ void handle_events(world_t *world, SDL_Event *event) {
                 break;    
         }
 }
-*/
 
-void handle_events(SDL_Event *event, world_t* world){
 
-    SDL_PollEvent(event);
+
+// void handle_events(world_t* world, SDL_Event *event){
+
+//     SDL_PollEvent(event);
     
-    const Uint8 *state = SDL_GetKeyboardState(NULL);
-    //Si l'utilisateur a cliqué sur le X de la fenêtre
-    if( event->type == SDL_QUIT ) {
-        //On indique la fin du jeu
-        world->gameOver = 1;
-    }
+//     const Uint8 *state = SDL_GetKeyboardState(NULL);
+//     //Si l'utilisateur a cliqué sur le X de la fenêtre
+//     if( event->type == SDL_QUIT ) {
+//         //On indique la fin du jeu
+//         world->gameOver = 1;
+//     }
 
-    if(state[SDL_SCANCODE_LEFT]){
+//     if(state[SDL_SCANCODE_LEFT]){
 
-        world->player.dest_rect.x -= MOVE_STEP;
+//         if(!is_colliding_left_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
+//             world->player.dest_rect.x -= MOVE_STEP;
+//                         if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+//                             world->player.current_frame_walk = 0 ;
+//                         }else{
+//                             world->player.current_frame_walk ++ ;
+//                         }
+//                         world->player.vers_la_droite = 0 ;
+//                         printf("pas de collision \n") ;
+//                     }    
+//                     printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
 
-        if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
 
-            world->player.current_frame_walk = 0 ;
-
-        }else{
-
-            world->player.current_frame_walk ++ ;
-        }
-
-    }
-    if(state[SDL_SCANCODE_RIGHT]){
+//     }
+//     if(state[SDL_SCANCODE_RIGHT]){
             
-        world->player.dest_rect.x += MOVE_STEP;
+//        if(!is_colliding_right_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
+//             world->player.dest_rect.x += MOVE_STEP;
+//             if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+//                 world->player.current_frame_walk = 0 ;
+//             }else{
+//                 world->player.current_frame_walk ++ ;
+//             }
+//             world->player.vers_la_droite = 1 ;
+//         }
+//         printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
 
-        if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+//     }
 
-            world->player.current_frame_walk = 0 ;
-
-        }else{
-
-            world->player.current_frame_walk ++ ;
-        }
-
-    }
-
-    if(state[SDL_SCANCODE_UP]){
-
-            
-        world->player.dest_rect.y -= MOVE_STEP;
-
-    }
-    if(state[SDL_SCANCODE_DOWN]){
+//     if(state[SDL_SCANCODE_UP]){
 
             
-        world->player.dest_rect.y += MOVE_STEP;
+//         world->player.dest_rect.y -= MOVE_STEP;
 
-    }
+//     }
+//     if(state[SDL_SCANCODE_DOWN]){
+
+            
+//         world->player.dest_rect.y += MOVE_STEP;
+
+//     }
 
     
-}
+// }
 
 void limite_haut(sprite_t* sprite){
     if(sprite->dest_rect.y < 0){
@@ -445,8 +464,16 @@ void limite_haut(sprite_t* sprite){
 void limite_bas(sprite_t* sprite, int screen_Height){
     if(sprite->dest_rect.y + IMAGE_PLAYER_HEIGHT > screen_Height){
 
-        sprite->dest_rect.y = screen_Height - IMAGE_PLAYER_HEIGHT;
+        sprite->dest_rect.y = screen_Height - SPRITE_HEIGHT;
 
+
+    }
+}
+
+void limite_gauche(sprite_t* sprite){
+    if(sprite->dest_rect.x < 0){
+
+        sprite->dest_rect.x = 0;
 
     }
 
@@ -455,6 +482,7 @@ void limite_bas(sprite_t* sprite, int screen_Height){
 void update_data(world_t* world, int screen_Height){
     limite_haut(&world->player);
     limite_bas(&world->player, screen_Height);
+    limite_gauche(&world->player);
 
 }
 
@@ -469,8 +497,58 @@ bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_pl
     sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h &&
     sprite->dest_rect.y + sprite->dest_rect.h > tab_platesFormes[i].dest_rect.y)
         {   
-            printf("collision with (%d,%d) \n", tab_platesFormes[i].dest_rect.x,tab_platesFormes[i].dest_rect.y) ;
             if(sprite->dest_rect.x < tab_platesFormes[i].dest_rect.x){
+                return true ;
+            }
+        }
+    }
+    return false ;
+}
+
+bool is_colliding_left_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme)
+{
+    for(int i = 0; i < nbPlateForme; i++)
+    {
+        if (sprite->dest_rect.x < tab_platesFormes[i].dest_rect.x + tab_platesFormes[i].dest_rect.w &&
+            sprite->dest_rect.x + sprite->dest_rect.w > tab_platesFormes[i].dest_rect.x &&
+            sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h &&
+            sprite->dest_rect.y + sprite->dest_rect.h > tab_platesFormes[i].dest_rect.y) 
+        {
+            if(sprite->dest_rect.x > tab_platesFormes[i].dest_rect.x){
+                return true ;
+            }
+        }
+    }
+    return false ;
+}
+
+bool is_colliding_up_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme)
+{
+    for(int i = 0; i < nbPlateForme; i++)
+    {
+        if (sprite->dest_rect.x < tab_platesFormes[i].dest_rect.x + tab_platesFormes[i].dest_rect.w &&
+            sprite->dest_rect.x + sprite->dest_rect.w > tab_platesFormes[i].dest_rect.x &&
+            sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h &&
+            sprite->dest_rect.y + sprite->dest_rect.h > tab_platesFormes[i].dest_rect.y) 
+        {
+            if(sprite->dest_rect.y > tab_platesFormes[i].dest_rect.y){
+                return true ;
+            }
+        }
+    }
+    return false ;
+}
+
+bool is_colliding_down_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme)
+{
+    for(int i = 0; i < nbPlateForme; i++)
+    {
+        if (sprite->dest_rect.x < tab_platesFormes[i].dest_rect.x + tab_platesFormes[i].dest_rect.w &&
+            sprite->dest_rect.x + sprite->dest_rect.w > tab_platesFormes[i].dest_rect.x &&
+            sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h &&
+            sprite->dest_rect.y + sprite->dest_rect.h > tab_platesFormes[i].dest_rect.y) 
+        {
+            if(sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y){
                 return true ;
             }
         }
