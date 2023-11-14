@@ -405,6 +405,7 @@ void sprite_boundary_handling(sprite_t *sprite, int width, int height){
 }
 
 
+
 // bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme)
 // {
 //     for(int i = 0; i < nbPlateForme; i++)
