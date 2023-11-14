@@ -3,7 +3,7 @@
 #define WORLD_H
 
 #include <SDL2/SDL.h> 
-#include <stdbool.h>
+
 
 /**
  * le nombre de sprites 
@@ -213,23 +213,30 @@ int is_game_over(world_t *world) ;
  * \brief la fonction gere les evenements lies a la souris et au clavier
  * \param world les données du monde
  * \param event evenements
- * \return 1 si le jeu est fini, 0 sinon
  */
-void handle_events(world_t *world, SDL_Event *event) ;
+void handle_events(SDL_Event *event, world_t* world) ;
+
 
 /**
- * \brief La fonction permet de mettre a jour les donnes du monde
+ * \brief La fonction qui veillera à ce que si le vaisseau commence à dépasser la limite haut
+ * \param sprite Le sprite
+ */
+void limite_haut(sprite_t* sprite);
+
+/**
+ * \brief La fonction qui veillera à ce que si le vaisseau commence à dépasser la limite bas
+ * \param sprite Le sprite
+ * \param screen_Height le hauteur d'ecran
+ */
+void limite_bas(sprite_t* sprite , int screen_Height);
+    
+
+/**
+ * \brief La fonction met à jour les données en tenant compte de la physique du monde
  * \param world les données du monde
+ * \param screen_Height le hauteur d'ecran
  */
-void update_data(world_t *world) ;
-
-/**
- * \brief la fonction gere les limites a gauche , droite , haut , bas du jeu
- * \param sprite le sprite a gerer
- * \param width la largeur de l'ecran
- * \param height la hauteur de l'ecran
-*/
-void sprite_boundary_handling(sprite_t *sprite, int width, int height);
+void update_data(world_t* world, int screen_Height);
 
 
 /**
@@ -239,6 +246,6 @@ void sprite_boundary_handling(sprite_t *sprite, int width, int height);
 * \param nbPlateForme le nombre de plateforme
 * \return vrai s'ils sont en collision
 */
-bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme);
+// bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme);
 
 #endif
