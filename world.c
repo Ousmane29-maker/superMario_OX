@@ -483,7 +483,7 @@ void update_data(world_t* world, int screen_Height){
     limite_haut(&world->player);
     limite_bas(&world->player, screen_Height);
     limite_gauche(&world->player);
-    world->player.dest_rect.y += world->gravity;
+    // world->player.dest_rect.y += world->gravity;
 
 }
 

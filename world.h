@@ -30,11 +30,16 @@
 /**
  * le pas de deplacement 
 */
-#define MOVE_STEP 10
+#define MOVE_STEP 5
 
-
+/**
+ * la hauteur du du sources joueur 
+*/
 #define IMAGE_PLAYER_HEIGHT 50
 
+/**
+ * la largeur du sources du joueur  
+*/
 #define IMAGE_PLAYER_WIDTH 28
 
 /**
@@ -231,6 +236,10 @@ void limite_haut(sprite_t* sprite);
  */
 void limite_bas(sprite_t* sprite , int screen_Height);
 
+/**
+ * \brief La fonction qui veillera à ce que si le vaisseau commence à dépasser la limite bas
+ * \param sprite Le sprite
+ */
 void limite_gauche(sprite_t* sprite);
     
 
@@ -251,10 +260,31 @@ void update_data(world_t* world, int screen_Height) ;
 */
 bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme);
 
+/**
+* \brief la fonction indique si le sprite est en collision avec une plateforme (du tableau) qui est a sa gauche
+* \param sprite le sprite a 
+* \param tab_platesFormes le tableau de plateforme
+* \param nbPlateForme le nombre de plateforme
+* \return vrai s'ils sont en collision
+*/
 bool is_colliding_left_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
 
+/**
+* \brief la fonction indique si le sprite est en collision avec une plateforme (du tableau) qui est en dessous 
+* \param sprite le sprite a 
+* \param tab_platesFormes le tableau de plateforme
+* \param nbPlateForme le nombre de plateforme
+* \return vrai s'ils sont en collision
+*/
 bool is_colliding_down_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
 
+/**
+* \brief la fonction indique si le sprite est en collision avec une plateforme (du tableau) qui est au dessus 
+* \param sprite le sprite a 
+* \param tab_platesFormes le tableau de plateforme
+* \param nbPlateForme le nombre de plateforme
+* \return vrai s'ils sont en collision
+*/
 bool is_colliding_up_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
 
 #endif
