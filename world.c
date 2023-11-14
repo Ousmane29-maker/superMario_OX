@@ -326,6 +326,7 @@ int is_game_over(world_t *world){
     return world->gameOver;
 }
 
+/*
 void handle_events(world_t *world, SDL_Event *event) {
     // Gérer les événements SDL
     SDL_PollEvent(event);
@@ -374,35 +375,118 @@ void handle_events(world_t *world, SDL_Event *event) {
                 break;    
         }
 }
+*/
 
-void update_data(world_t *world){
-    sprite_boundary_handling(&world->player, 1900, 800) ; // faut mettre la taille normale de l'ecran !!!!!!!
-    // if(is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
-    //     world->gravity = 0 ;
-    // }else{
-    //     world->gravity = GRAVITY ;
-    // }
-    // //world->player.dest_rect.y += world->gravity;
-}    
+void handle_events(SDL_Event *event, world_t* world){
+
+    SDL_PollEvent(event);
+    
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+    //Si l'utilisateur a cliqué sur le X de la fenêtre
+    if( event->type == SDL_QUIT ) {
+        //On indique la fin du jeu
+        world->gameOver = 1;
+    }
+
+    if(state[SDL_SCANCODE_LEFT]){
+
+        world->player.dest_rect.x -= MOVE_STEP;
+
+        if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+
+            world->player.current_frame_walk = 0 ;
+
+        }else{
+
+            world->player.current_frame_walk ++ ;
+        }
+
+    }
+    if(state[SDL_SCANCODE_RIGHT]){
+            
+        world->player.dest_rect.x += MOVE_STEP;
+
+        if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
+
+            world->player.current_frame_walk = 0 ;
+
+        }else{
+
+            world->player.current_frame_walk ++ ;
+        }
+
+    }
+
+    if(state[SDL_SCANCODE_UP]){
+
+            
+        world->player.dest_rect.y -= MOVE_STEP;
+
+    }
+    if(state[SDL_SCANCODE_DOWN]){
+
+            
+        world->player.dest_rect.y += MOVE_STEP;
+
+    }
+
+    
+}
+
+void limite_haut(sprite_t* sprite){
+    if(sprite->dest_rect.y < 0){
+
+        sprite->dest_rect.y = 0;
+
+    }
+
+}
+
+void limite_bas(sprite_t* sprite, int screen_Height){
+    if(sprite->dest_rect.y + IMAGE_PLAYER_HEIGHT > screen_Height){
+
+        sprite->dest_rect.y = screen_Height - IMAGE_PLAYER_HEIGHT;
+
+
+    }
+
+}
+
+void update_data(world_t* world, int screen_Height){
+    limite_haut(&world->player);
+    limite_bas(&world->player, screen_Height);
+
+}
+
+// void update_data(world_t *world){
+//     sprite_boundary_handling(&world->player, 1900, 800) ; // faut mettre la taille normale de l'ecran !!!!!!!
+//     // if(is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
+//     //     world->gravity = 0 ;
+//     // }else{
+//     //     world->gravity = GRAVITY ;
+//     // }
+//     // //world->player.dest_rect.y += world->gravity;
+// }  
+
     
 
-void sprite_boundary_handling(sprite_t *sprite, int width, int height){
-    //Limites en haut
-    if(sprite->dest_rect.y < 0){
-        sprite->dest_rect.y = 0 ;
-    }
-    //En bas
-    if(sprite->dest_rect.y + sprite->dest_rect.h > height){
-        sprite->dest_rect.y = height ;
-    }
-    //A gauche
-    if(sprite->dest_rect.x < 0){
-        sprite->dest_rect.x = 0 ;
-    }//A droite
-    if(sprite->dest_rect.x + sprite->dest_rect.w > width){
-        sprite->dest_rect.x = width ;
-    }
-}
+// void sprite_boundary_handling(sprite_t *sprite, int width, int height){
+//     //Limites en haut
+//     if(sprite->dest_rect.y < 0){
+//         sprite->dest_rect.y = 0 ;
+//     }
+//     //En bas
+//     if(sprite->dest_rect.y + sprite->dest_rect.h > height){
+//         sprite->dest_rect.y = height ;
+//     }
+//     //A gauche
+//     if(sprite->dest_rect.x < 0){
+//         sprite->dest_rect.x = 0 ;
+//     }//A droite
+//     if(sprite->dest_rect.x + sprite->dest_rect.w > width){
+//         sprite->dest_rect.x = width ;
+//     }
+// }
 
 
 
