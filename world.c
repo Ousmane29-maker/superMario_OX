@@ -458,47 +458,22 @@ void update_data(world_t* world, int screen_Height){
 
 }
 
-// void update_data(world_t *world){
-//     sprite_boundary_handling(&world->player, 1900, 800) ; // faut mettre la taille normale de l'ecran !!!!!!!
-//     // if(is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
-//     //     world->gravity = 0 ;
-//     // }else{
-//     //     world->gravity = GRAVITY ;
-//     // }
-//     // //world->player.dest_rect.y += world->gravity;
-// }  
-
-    
-
-// void sprite_boundary_handling(sprite_t *sprite, int width, int height){
-//     //Limites en haut
-//     if(sprite->dest_rect.y < 0){
-//         sprite->dest_rect.y = 0 ;
-//     }
-//     //En bas
-//     if(sprite->dest_rect.y + sprite->dest_rect.h > height){
-//         sprite->dest_rect.y = height ;
-//     }
-//     //A gauche
-//     if(sprite->dest_rect.x < 0){
-//         sprite->dest_rect.x = 0 ;
-//     }//A droite
-//     if(sprite->dest_rect.x + sprite->dest_rect.w > width){
-//         sprite->dest_rect.x = width ;
-//     }
-// }
 
 
-
-// bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme)
-// {
-//     for(int i = 0; i < nbPlateForme; i++)
-//     {
-//         if(sprite->dest_rect.x + sprite->dest_rect.w >= tab_platesFormes[i].dest_rect.x && 
-//             abs(sprite->dest_rect.y + sprite->dest_rect.h/2 - tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h/2 ) < (sprite->dest_rect.h + tab_platesFormes[i].dest_rect.h) / 2)
-//         {
-//             return true ;
-//         }
-//     }
-//     return false ;
-// }
+bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme)
+{
+    for(int i = 0; i < nbPlateForme; i++)
+    {
+        if (sprite->dest_rect.x + sprite->dest_rect.w > tab_platesFormes[i].dest_rect.x &&
+    sprite->dest_rect.x < tab_platesFormes[i].dest_rect.x + tab_platesFormes[i].dest_rect.w &&
+    sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h &&
+    sprite->dest_rect.y + sprite->dest_rect.h > tab_platesFormes[i].dest_rect.y)
+        {   
+            printf("collision with (%d,%d) \n", tab_platesFormes[i].dest_rect.x,tab_platesFormes[i].dest_rect.y) ;
+            if(sprite->dest_rect.x < tab_platesFormes[i].dest_rect.x){
+                return true ;
+            }
+        }
+    }
+    return false ;
+}

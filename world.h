@@ -3,6 +3,7 @@
 #define WORLD_H
 
 #include <SDL2/SDL.h> 
+#include <stdbool.h>
 
 
 /**
@@ -246,6 +247,6 @@ void update_data(world_t* world, int screen_Height);
 * \param nbPlateForme le nombre de plateforme
 * \return vrai s'ils sont en collision
 */
-// bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme);
+bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme);
 
 #endif
