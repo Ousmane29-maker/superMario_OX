@@ -6,7 +6,7 @@
 
 
 /**
- * @brief Structure de gestion des ressources du jeu.
+ * \brief Structure de gestion des ressources du jeu.
  */
 typedef struct ressources_s {
     const char* terrain ; /**< le fichier representant le terrain, */
@@ -25,6 +25,19 @@ typedef struct ressources_s {
 */
 
 void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources);
+
+/**
+ * \brief La fonction nettoie les resources
+ * \param resources les resources
+*/
+void clean_ressources(ressources_t *ressources);
+
+
+/**
+ * \brief La fonction nettoie les resources
+ * \param resources les resources
+*/
+void clean_ressources(ressources_t *ressources);
 
 /**
  * \brief La fonction initialise la SDL.
