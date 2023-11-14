@@ -24,7 +24,13 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
     ressources->playerTexture = charger_image("ressources/player.bmp", renderer) ;
     ressources->endLevel = charger_image("ressources/endLevel.bmp", renderer) ;
     ressources->pavage = charger_image("ressources/pavage.bmp", renderer) ;
-    
+
+}
+
+void clean_ressources(ressources_t *ressources){
+    SDL_DestroyTexture(ressources->pavage);
+    SDL_DestroyTexture(ressources->playerTexture);
+    SDL_DestroyTexture(ressources->background);
 }
 
 SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer){
