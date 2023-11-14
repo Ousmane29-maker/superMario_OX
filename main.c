@@ -23,9 +23,9 @@ int main() {
     //Boucle principale
     while (!is_game_over(&world)) {
         // Gérer les événements SDL
-        handle_events(&world, &events) ;
+        handle_events(&events,&world);
         // Mise a jour des donnees
-        update_data(&world) ;
+        update_data(&world, nbLig*PLATFORM_SIZE);
         // Rafraîchissement de l'écran
         refresh_graphics(ecran, &world, &ressources) ;
         // Attendre environ 16 millisecondes 
@@ -33,9 +33,7 @@ int main() {
     }
 
     // Libérer la mémoire
-    SDL_DestroyTexture(ressources.pavage);
-    SDL_DestroyTexture(ressources.playerTexture);
-    SDL_DestroyTexture(ressources.background);
+    clean_ressources(&ressources);
     SDL_DestroyRenderer(ecran);
     desallouer_tab_2D(world.tab_terrain, nbLig);
     free(world.tab_platesFormes);
