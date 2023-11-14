@@ -30,7 +30,7 @@
 /**
  * le pas de deplacement 
 */
-#define MOVE_STEP 5
+#define MOVE_STEP 10
 
 
 #define IMAGE_PLAYER_HEIGHT 50

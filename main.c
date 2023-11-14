@@ -28,8 +28,7 @@ int main() {
         update_data(&world, nbLig*PLATFORM_SIZE);
         // Rafraîchissement de l'écran
         refresh_graphics(ecran, &world, &ressources) ;
-        // Attendre environ 5 millisecondes 
-        SDL_Delay(5); 
+        // Attendre environ 5 millisecondes  
     }
 
     // Libérer la mémoire
