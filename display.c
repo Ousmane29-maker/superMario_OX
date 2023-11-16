@@ -108,17 +108,25 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     // Copier les platformes dans le renderer
     SDL_RenderCopyPlateFormes(world, renderer, ressources->pavage, world->nbPlateForme);
     // Copier le joueur dans le renderer
-    if(world->player.weapeon == 0){
-        if(world->player.vers_la_droite == 1){
-            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect);
+    if(is_jumping(&world->player)){
+       if(world->player.vers_la_droite == 1){
+            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.jump_rects[world->player.current_frame_jump], &world->player.dest_rect);
         }else{
-            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-        }
+            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.jump_rects[world->player.current_frame_jump], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+        } 
     }else{
-        if(world->player.vers_la_droite == 1){
-            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect);
+        if(world->player.weapeon == 0){
+            if(world->player.vers_la_droite == 1){
+                SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect);
+            }else{
+                SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+            }
         }else{
-            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+            if(world->player.vers_la_droite == 1){
+                SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect);
+            }else{
+                SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+            }
         }
     }
     

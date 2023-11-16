@@ -277,6 +277,11 @@ void init_tab_platesFormes(fixedSprite_t* tab_plateFormes, char ** tab_terrain, 
 }
 
 void init_player(sprite_t *player, double x, double y) {
+    player->weapeon = 0 ;
+    player->current_frame_walk = 0 ;
+    player->vers_la_droite = 1 ;
+    player->current_frame_jump = 0 ;
+
     player->walk_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
     int x_src , y_src ;
     x_src = 20 ;
@@ -291,28 +296,36 @@ void init_player(sprite_t *player, double x, double y) {
 
     player->walk_with_weapeon_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
     x_src = 45 ;
-    y_src = 1770;
-    for(int i = 0 ; i <  NOMBRE_FRAMES_WALK; i++){
+    y_src = 1770 ;
+    for(int i = 0 ; i <= NOMBRE_FRAMES_WALK; i++){
         player->walk_with_weapeon_rects [i].x = x_src ;
         player->walk_with_weapeon_rects [i].y = y_src ;
-        player->walk_with_weapeon_rects [i].w = 60;
+        player->walk_with_weapeon_rects [i].w = IMAGE_ARMED_PLAYER_WIDTH;
         player->walk_with_weapeon_rects [i].h = IMAGE_PLAYER_HEIGHT;
         x_src = x_src + 129 ;
     }
-    
+
+    player->jump_rects = malloc(NOMBRE_FRAMES_JUMP * sizeof(SDL_Rect)) ;
+    x_src = 20 ;
+    y_src = 206 ;
+    for(int i = 1 ; i <= NOMBRE_FRAMES_JUMP; i++){
+        player->jump_rects [i].x = x_src ;
+        player->jump_rects [i].y = y_src ;
+        player->jump_rects [i].w = IMAGE_PLAYER_WIDTH ;
+        player->jump_rects [i].h = IMAGE_PLAYER_HEIGHT;
+        x_src = x_src + 64 ;
+    }
+    //destination
     player->dest_rect.x = x ;
     player->dest_rect.y = y ;
     player->dest_rect.w = SPRITE_WIDTH;
     player->dest_rect.h = SPRITE_HEIGHT ;
 
-    player->current_frame_walk = 0 ;
-    player->vers_la_droite = 1 ;
 }
 
 void init_world(world_t* world, const char* nomFichier){
     world->gameOver = 0 ;
-    world->player.weapeon = 0 ;
-    world->gravity = GRAVITY ;
+    world->gravity = GRAVITY;
     int nbLig, nbCol;
     taille_fichier(nomFichier, &nbLig, &nbCol);
     world->tab_terrain = lire_fichier(nomFichier) ; // allocation memoire inclu
@@ -338,16 +351,7 @@ void handle_events(world_t *world, SDL_Event *event) {
         case SDL_KEYDOWN:
             switch (event->key.keysym.sym) {
                 case SDLK_UP:
-                if(!is_colliding_up_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
-                    world->player.dest_rect.y -= MOVE_STEP;
-                }
-                    printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
-                    break;
-                case SDLK_DOWN:
-                    if(!is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
-                        world->player.dest_rect.y += MOVE_STEP;
-                    }
-                    printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
+                    world->player.current_frame_jump = 1 ;
                     break;
                 case SDLK_LEFT:
                     if(!is_colliding_left_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
@@ -358,9 +362,7 @@ void handle_events(world_t *world, SDL_Event *event) {
                             world->player.current_frame_walk ++ ;
                         }
                         world->player.vers_la_droite = 0 ;
-                        printf("pas de collision \n") ;
                     }    
-                    printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
                     break;
                 case SDLK_RIGHT:
                     if(!is_colliding_right_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
@@ -371,18 +373,13 @@ void handle_events(world_t *world, SDL_Event *event) {
                             world->player.current_frame_walk ++ ;
                         }
                         world->player.vers_la_droite = 1 ;
-                        printf("pas de collision \n") ;
-                    }else{
-
                     }
-                    printf("coord_joueur (%d,%d) \n", world->player.dest_rect.x, world->player.dest_rect.y) ;
                     break;
 
                 case SDLK_w :
                 if(world->player.weapeon == 0 ){
                    world->player.weapeon = 1 ; 
-                    world->player.dest_rect.w = 60 ;
-
+                    world->player.dest_rect.w = ARMED_SPRITE_WIDTH ;
                 }else{
                     world->player.weapeon = 0 ;
                     world->player.dest_rect.w = SPRITE_WIDTH ;
@@ -483,8 +480,26 @@ void update_data(world_t* world, int screen_Height){
     limite_haut(&world->player);
     limite_bas(&world->player, screen_Height);
     limite_gauche(&world->player);
-    // world->player.dest_rect.y += world->gravity;
+    if(world->player.dest_rect.y + SPRITE_HEIGHT == screen_Height){
+        SDL_Delay(1000);
+        world->gameOver = 1 ;
+        printf(" !!!!!!!! Game Over !!!!!!!! \n") ;
+        return ;
+    }
 
+    if(is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world-> nbPlateForme )){
+        printf("le joueur est sur une plateforme \n") ;
+        world->gravity = 0 ;   // donc il ne doit pas tombeer
+    }else{
+        world->gravity = GRAVITY ;
+        printf(" le joueur n'est pas sur une plateforme  \n") ;
+    }
+    if(world->player.current_frame_jump == 0){
+        world->player.dest_rect.y += world->gravity ;
+
+    }else{ //is_jumping
+        jump(&world->player, world) ;
+    }
 }
 
 
@@ -498,7 +513,7 @@ bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_pl
     sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h &&
     sprite->dest_rect.y + sprite->dest_rect.h > tab_platesFormes[i].dest_rect.y)
         {   
-            if(sprite->dest_rect.x < tab_platesFormes[i].dest_rect.x){
+            if(sprite->dest_rect.x <= tab_platesFormes[i].dest_rect.x){
                 return true ;
             }
         }
@@ -544,10 +559,10 @@ bool is_colliding_down_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_pla
 {
     for(int i = 0; i < nbPlateForme; i++)
     {
-        if (sprite->dest_rect.x < tab_platesFormes[i].dest_rect.x + tab_platesFormes[i].dest_rect.w &&
-            sprite->dest_rect.x + sprite->dest_rect.w > tab_platesFormes[i].dest_rect.x &&
-            sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h &&
-            sprite->dest_rect.y + sprite->dest_rect.h > tab_platesFormes[i].dest_rect.y) 
+        if (sprite->dest_rect.x <= tab_platesFormes[i].dest_rect.x + tab_platesFormes[i].dest_rect.w &&
+            sprite->dest_rect.x + sprite->dest_rect.w >= tab_platesFormes[i].dest_rect.x &&
+            sprite->dest_rect.y <= tab_platesFormes[i].dest_rect.y + tab_platesFormes[i].dest_rect.h &&
+            sprite->dest_rect.y + sprite->dest_rect.h >= tab_platesFormes[i].dest_rect.y) 
         {
             if(sprite->dest_rect.y < tab_platesFormes[i].dest_rect.y){
                 return true ;
@@ -555,4 +570,42 @@ bool is_colliding_down_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_pla
         }
     }
     return false ;
+}
+
+
+bool is_jumping(sprite_t *sprite){
+    return sprite->current_frame_jump > 0 && sprite->current_frame_jump <= NOMBRE_FRAMES_JUMP;
+}
+
+void jump(sprite_t *sprite, world_t *world){
+    if(is_jumping(sprite)){
+        world->player.weapeon = 0 ; // on range l'arme
+        world->player.dest_rect.w = SPRITE_WIDTH ; // largeur par defaut 
+        sprite->current_frame_jump ++ ;
+        if(sprite->current_frame_jump <= NOMBRE_FRAMES_JUMP/2 ){
+            if(!is_colliding_up_with_a_platform(sprite, world->tab_platesFormes, world->nbPlateForme)){
+                sprite->dest_rect.y -= 20 ; // On monte de 20 a chaque monte du saut
+            }else{
+                sprite->current_frame_jump =  NOMBRE_FRAMES_JUMP/2 ;
+            }
+            SDL_Delay(80);
+        }else{
+            if(!is_colliding_down_with_a_platform(sprite, world->tab_platesFormes, world->nbPlateForme)){
+                sprite->dest_rect.y += 1 ; // On descend de 1 a chaque descente du saut
+            }
+            SDL_Delay(40);
+        }
+        //se deplacer soit a gauche soit a droite  en sautant
+        if(sprite->vers_la_droite == 1){
+            if(!is_colliding_right_with_a_platform(sprite, world->tab_platesFormes, world->nbPlateForme)){
+                sprite->dest_rect.x += 8 ; 
+            }
+        }else{
+            if(!is_colliding_left_with_a_platform(sprite, world->tab_platesFormes, world->nbPlateForme)){
+                sprite->dest_rect.x -= 8 ; 
+            }
+        }
+    }else{
+        sprite->current_frame_jump = 0 ;
+    }
 }

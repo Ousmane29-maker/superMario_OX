@@ -7,7 +7,7 @@
 
 
 /**
- * le nombre de sprites 
+ * la taille d'une plateform 
 */
 #define PLATFORM_SIZE 32
 
@@ -26,26 +26,42 @@
 */
 #define SPRITE_WIDTH 30
 
+/**
+ * la largeur du sprite lorsqu'il est armee
+*/
+#define ARMED_SPRITE_WIDTH 60
+
 
 /**
  * le pas de deplacement 
 */
-#define MOVE_STEP 5
+#define MOVE_STEP 15
 
 /**
- * la hauteur du du sources joueur 
+ * la hauteur de l'image (src) du sprite 
 */
 #define IMAGE_PLAYER_HEIGHT 50
 
 /**
- * la largeur du sources du joueur  
+ * la largeur de l'image (src) du sprite 
 */
 #define IMAGE_PLAYER_WIDTH 28
 
 /**
- * Nombre de frames (images) dans l'animation du joueur. 
+ * la largeur de l'image (src) du sprite armee  
+*/
+#define IMAGE_ARMED_PLAYER_WIDTH 60
+
+/**
+ * Nombre de frames (images) walk  dans l'animation du joueur. 
 */
 #define NOMBRE_FRAMES_WALK 9
+
+
+/**
+ * Nombre de frames (images) jump dans l'animation du joueur. 
+*/
+#define NOMBRE_FRAMES_JUMP 7
 
 
 /**
@@ -68,10 +84,12 @@ typedef struct fixedSprite_s {
 typedef struct sprite_s {
     SDL_Rect* walk_rects; /**< Tableau de rectangles source représentant les différentes images du sprite en marchant. */
     SDL_Rect* walk_with_weapeon_rects ; /**< Tableau de rectangles source représentant les différentes images du sprite en marchant. */
+    SDL_Rect* jump_rects ; /**< Tableau de rectangles source représentant les différentes images du sprite en sautant. */
     SDL_Rect dest_rect; /**< Rectangle de destination représentant la position et les dimensions sur l'écran. */
     int weapeon ; /**< champ indiquant si le personnage est armee ou pas */
     int current_frame_walk; /**< Frame walk actuelle affichée. */
     int vers_la_droite; /**< Champ indiquant si le sprite va vers la droite  */
+    int current_frame_jump ; /**< Champ indiquant le moment du saut */
 } sprite_t;
 
 /**
@@ -286,5 +304,21 @@ bool is_colliding_down_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_pla
 * \return vrai s'ils sont en collision
 */
 bool is_colliding_up_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
+
+
+/**
+* \brief la fonction indique si le sprite est en entrain de sauter
+* \param sprite le sprite  
+* \return vrai si le sprite s'il est entrain de sauter
+*/
+bool is_jumping(sprite_t *sprite) ;
+
+
+/**
+* \brief la fonction qui permet de sauter
+* \param sprite le sprite  
+* \param world les données du monde
+*/
+void jump(sprite_t *sprite, world_t *world) ;
 
 #endif

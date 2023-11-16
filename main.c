@@ -38,6 +38,7 @@ int main() {
     free(world.tab_platesFormes);
     free(world.player.walk_rects) ;
     free(world.player.walk_with_weapeon_rects) ;
+    free(world.player.jump_rects) ;
 
     // Quitter SDL
     SDL_DestroyWindow(fenetre);
