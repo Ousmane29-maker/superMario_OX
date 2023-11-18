@@ -25,10 +25,13 @@ int main() {
         // Gérer les événements SDL
         handle_events(&world, &events);
         // Mise a jour des donnees
-        update_data(&world, nbLig*PLATFORM_SIZE);
+        update_data(&world, nbLig*PLATFORM_SIZE, nbCol*PLATFORM_SIZE);
         // Rafraîchissement de l'écran
         refresh_graphics(ecran, &world, &ressources) ;
-        // Attendre environ 5 millisecondes  
+        // Attendre environ 100 milliseconde apres la fin du jeu
+        if(is_game_over(&world)){
+            SDL_Delay(1000) ;
+        }
     }
 
     // Libérer la mémoire
@@ -36,6 +39,7 @@ int main() {
     SDL_DestroyRenderer(ecran);
     desallouer_tab_2D(world.tab_terrain, nbLig);
     free(world.tab_platesFormes);
+    free(world.tab_coins);
     free(world.player.walk_rects) ;
     free(world.player.walk_with_weapeon_rects) ;
     free(world.player.jump_rects) ;

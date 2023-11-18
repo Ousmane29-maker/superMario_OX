@@ -12,9 +12,14 @@
 #define PLATFORM_SIZE 32
 
 /**
+ * la taille d'une d'une piece 
+*/
+#define PIECE_SIZE 20
+
+/**
  * la taille d'un sprites
 */
-#define NOMBRE_TEXTURE_PLATFORM 9
+#define NOMBRE_TEXTURE_PLATFORM 6
 
 /**
  * la hauteur du joueur
@@ -69,6 +74,16 @@
 */
 #define GRAVITY 1
 
+/**
+ * la largeur du drapeau 
+*/
+#define ENDLEVEL_WIDTH 40
+
+/**
+ * la hauteur du drapeau 
+*/
+#define ENDLEVEL_HEIGHT 64
+
 
 /**
  * @brief Structure représentant une plateforme statique pour l'affichage graphique.
@@ -100,8 +115,11 @@ typedef struct world_s {
     int gameOver ; /**< Champ indiquant si l'on est à la fin du jeu. */
     int gravity ; /**< Champ indiquant la gravite */
     sprite_t player; /**< Champ indiquant le joueur. */
+    fixedSprite_t endLevel ;  /**< Champ indiquant le drapeau de fin de jeu. */
     fixedSprite_t* tab_platesFormes; /**< Champ correspondant au tableau de plates-formes. */
     int nbPlateForme ; /**< Champ correspondant au nombre de plates-formes. */
+    fixedSprite_t* tab_coins ; /**< Champ correspondant au tableau de pieces. */
+    int nbPiece ; /**< Champ correspondant au nombre de plates-formes. */
 } world_t;
     
 
@@ -175,6 +193,14 @@ void ecrire_fichier(const char* nomFichier, char** tab, int n, int m);
 */
 int nbrPlateformes(char** tab_terrain, int n, int m) ;
 
+/**
+* @param tab_terrain tableau de caracteres
+* @param n le nombre de lignes
+* @param m le nombre de colonne
+* @return le nombre de pieces dans le fichiers text
+*/
+int nbrPieces(char** tab_terrain, int n, int m) ;
+
 
 /**
 * @return un tableau de SDL_Rect initialise representant les src associe a chaque plateformes (image dans pavage)
@@ -219,6 +245,23 @@ void init_tab_platesFormes(fixedSprite_t* tab_plateFormes, char ** tab_terrain, 
 void init_player(sprite_t *player, double x, double y);
 
 /**
+* \param endLevel  pointeur vers fixedSprite_t
+* \param x l'abscisse initial du joueur 
+* \param y l'ordonne intial du joueur
+* \brief initialise le le drapeau
+*/
+void init_end_Level(fixedSprite_t *endLevel, double x, double y) ;
+
+/**
+* @param tab_terrain tableau de caracteres
+* @param n le nombre de lignes
+* @param m le nombre de colonne
+* @param tab_coins le tableau de pieces
+* @brief initialise le tableau de pieces
+*/
+void init_tab_coins(char ** tab_terrain, int n, int m, fixedSprite_t* tab_coins) ;
+
+/**
 * \param world pointeur vers world_t
 * \param nomFichier le nom du fichier 
 * \brief initialise le monde
@@ -242,31 +285,39 @@ void handle_events(world_t* world, SDL_Event *event) ;
 
 
 /**
- * \brief La fonction qui veillera à ce que si le vaisseau commence à dépasser la limite haut
+ * \brief La fonction qui veillera à ce que si le sprite commence à dépasser la limite haut
  * \param sprite Le sprite
  */
 void limite_haut(sprite_t* sprite);
 
 /**
- * \brief La fonction qui veillera à ce que si le vaisseau commence à dépasser la limite bas
+ * \brief La fonction qui veillera à ce que si le sprite commence à dépasser la limite bas
  * \param sprite Le sprite
  * \param screen_Height le hauteur d'ecran
  */
 void limite_bas(sprite_t* sprite , int screen_Height);
 
 /**
- * \brief La fonction qui veillera à ce que si le vaisseau commence à dépasser la limite bas
+ * \brief La fonction qui veillera à ce que si le sprite commence à dépasser la limite gauche
  * \param sprite Le sprite
  */
 void limite_gauche(sprite_t* sprite);
+
+/**
+ * \brief La fonction qui veillera à ce que si le sprite commence à dépasser la limite droie
+ * \param sprite Le sprite
+ * \param screen_Width le largeur d'ecran
+ */
+void limite_droite(sprite_t* sprite, int screen_Width) ;
     
 
 /**
  * \brief La fonction met à jour les données en tenant compte de la physique du monde
  * \param world les données du monde
  * \param screen_Height le hauteur d'ecran
+ * \param screen_Width la largeur de l'ecran
  */
-void update_data(world_t* world, int screen_Height) ;
+void update_data(world_t* world, int screen_Height, int screen_Width) ;
 
 
 /**
@@ -320,5 +371,21 @@ bool is_jumping(sprite_t *sprite) ;
 * \param world les données du monde
 */
 void jump(sprite_t *sprite, world_t *world) ;
+
+
+/**
+* \brief la fonction verifie si les deux sprites passes en parametre sont en collision
+* \param sprite1 le sprite  
+* \param sprite2 le sprite fixe
+*/
+bool is_colliding(sprite_t *sprite1 , fixedSprite_t* sprite2) ;
+
+/**
+* \brief la fonction verifie si le sprite est en collision avec une piece, si oui elle supprime la piece
+* \param sprite le sprite  
+* \param tab_coins le tableau de piece
+* \param nbre_piece le nombre de piece
+*/
+void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, int nbre_piece) ;
 
 #endif

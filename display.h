@@ -14,6 +14,7 @@ typedef struct ressources_s {
     SDL_Texture *playerTexture; /**< Texture pour le joueur. */
     SDL_Texture *endLevel; /**< Texture indiquant la fin du niveau. */
     SDL_Texture *pavage; /**< Texture pour les plateformes. */
+    SDL_Texture *piece; /**< Texture pour les pieces. */
     // Autres ressources ici
 } ressources_t;
 
@@ -73,12 +74,19 @@ SDL_Texture* charger_image_transparente(const char* nomfichier,SDL_Renderer* ren
  * @param world le monde
  * @param ecran le renderer
  * @param pavage la texture associe au pavage
- * @param nbre_plateforme le nombre de nbre_plateforme
- * copie tous les sprites dans le rendererÒ
+ * @param nbre_plateforme le nombre de plateforme
+ * copie tous les plateformes dans le renderer
 */
 void SDL_RenderCopyPlateFormes(world_t* world, SDL_Renderer* ecran, SDL_Texture* pavage,int nbre_plateforme);
 
-
+/**
+ * @param world le monde
+ * @param ecran le renderer
+ * @param piece la texture associe au piece
+ * @param nbre_piece le nombre de piece
+ * copie tous les pieces dans le rendererÒ
+*/
+void SDL_RenderCopyPieces(world_t* world, SDL_Renderer* ecran, SDL_Texture* piece,int nbre_piece) ;
 
 void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources);
 
