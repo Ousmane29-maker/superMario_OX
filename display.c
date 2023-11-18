@@ -22,7 +22,7 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
     ressources->terrain = "ressources/terrain.txt" ;
     ressources->background= charger_image("ressources/fond.bmp", renderer) ;
     ressources->playerTexture = charger_image("ressources/player.bmp", renderer) ;
-    ressources->endLevel = charger_image_transparentell("ressources/endLevel.bmp", renderer, 255,255,255) ;
+    ressources->endLevel = charger_image_transparente("ressources/endLevel.bmp", renderer, 255,255,255) ;
     ressources->pavage = charger_image("ressources/pavage.bmp", renderer) ;
     ressources->piece = charger_image("ressources/piece.bmp", renderer) ;
 

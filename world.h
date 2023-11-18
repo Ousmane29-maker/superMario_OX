@@ -105,6 +105,7 @@ typedef struct sprite_s {
     int current_frame_walk; /**< Frame walk actuelle affichée. */
     int vers_la_droite; /**< Champ indiquant si le sprite va vers la droite  */
     int current_frame_jump ; /**< Champ indiquant le moment du saut */
+    int nbPieceRamasse ; /**< Champ correspondant au nombre de piece ramassé. */
 } sprite_t;
 
 /**

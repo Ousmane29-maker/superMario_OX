@@ -278,6 +278,7 @@ void init_player(sprite_t *player, double x, double y) {
     player->current_frame_walk = 0 ;
     player->vers_la_droite = 1 ;
     player->current_frame_jump = 0 ;
+    player->nbPieceRamasse = 0 ;
 
     player->walk_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
     int x_src , y_src ;
@@ -533,7 +534,7 @@ void update_data(world_t* world, int screen_Height, int screen_Width){
     //geston colision avec le drapeau
     if(is_colliding(&world->player , &world->endLevel)){
         world->gameOver = 1 ;
-        printf(" !!!!!!!! You finish the first level !!!!!!!! \n") ;
+        printf(" !!!!!!!! You finish the first level with %d/%d coins !!!!!!!! \n", world->player.nbPieceRamasse, world->nbPiece) ;
     }
     //la fin du jeu
     if(world->player.dest_rect.y + SPRITE_HEIGHT == screen_Height){
@@ -666,6 +667,7 @@ void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, in
     for(int i = 0 ; i < nbre_piece; i++){
         if(is_colliding(sprite, &tab_coins[i])){
             tab_coins[i].dest_rect.y = - 100 ; // la piece disparait s'il est en collision avec le sprite
+            sprite->nbPieceRamasse ++ ;
         }
     }
 }
