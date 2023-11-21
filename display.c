@@ -25,15 +25,14 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
     ressources->endLevel = charger_image_transparente("ressources/endLevel.bmp", renderer, 255,255,255) ;
     ressources->pavage = charger_image("ressources/pavage.bmp", renderer) ;
     ressources->piece = charger_image("ressources/piece.bmp", renderer) ;
-
 }
 
 void clean_ressources(ressources_t *ressources){
     SDL_DestroyTexture(ressources->pavage);
     SDL_DestroyTexture(ressources->playerTexture);
     SDL_DestroyTexture(ressources->background);
-    SDL_DestroyTexture(ressources->endLevel);
     SDL_DestroyTexture(ressources->piece);
+    SDL_DestroyTexture(ressources->endLevel);
 }
 
 SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer){
@@ -103,12 +102,12 @@ void SDL_RenderCopyPlateFormes(world_t* world, SDL_Renderer* ecran, SDL_Texture*
     }
 }
 
-
 void SDL_RenderCopyPieces(world_t* world, SDL_Renderer* ecran, SDL_Texture* piece,int nbre_piece){
     for(int i = 0; i < nbre_piece; i++){
         SDL_RenderCopy(ecran,piece, NULL, &world->tab_coins[i].dest_rect);
     }
 }
+
 
 void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources){
     SDL_RenderClear(renderer);
@@ -121,25 +120,17 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     // Copier le drapeau dans le renderer
     SDL_RenderCopy(renderer, ressources->endLevel, NULL, &world->endLevel.dest_rect);
     // Copier le joueur dans le renderer
-    if(is_jumping(&world->player)){
-       if(world->player.vers_la_droite == 1){
-            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.jump_rects[world->player.current_frame_jump], &world->player.dest_rect);
+    if(world->player.weapeon == 0){
+        if(world->player.vers_la_droite == 1){
+            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect);
         }else{
-            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.jump_rects[world->player.current_frame_jump], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-        } 
+            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+        }
     }else{
-        if(world->player.weapeon == 0){
-            if(world->player.vers_la_droite == 1){
-                SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect);
-            }else{
-                SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-            }
+        if(world->player.vers_la_droite == 1){
+            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect);
         }else{
-            if(world->player.vers_la_droite == 1){
-                SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect);
-            }else{
-                SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-            }
+            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
         }
     }
     
