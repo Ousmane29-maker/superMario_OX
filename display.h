@@ -35,12 +35,6 @@ void clean_ressources(ressources_t *ressources);
 
 
 /**
- * \brief La fonction nettoie les resources
- * \param resources les resources
-*/
-void clean_ressources(ressources_t *ressources);
-
-/**
  * \brief La fonction initialise la SDL.
  * Elle crée la fenêtre du jeu ainsi que le renderer
  * \param window la fenêtre du jeu
@@ -74,8 +68,8 @@ SDL_Texture* charger_image_transparente(const char* nomfichier,SDL_Renderer* ren
  * @param world le monde
  * @param ecran le renderer
  * @param pavage la texture associe au pavage
- * @param nbre_plateforme le nombre de plateforme
- * copie tous les plateformes dans le renderer
+ * @param nbre_plateforme le nombre de nbre_plateforme
+ * copie tous les sprites dans le rendererÒ
 */
 void SDL_RenderCopyPlateFormes(world_t* world, SDL_Renderer* ecran, SDL_Texture* pavage,int nbre_plateforme);
 
