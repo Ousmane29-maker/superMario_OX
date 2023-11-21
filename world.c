@@ -164,12 +164,12 @@ void ecrire_fichier(const char* nomFichier, char** tab, int n, int m){
 }
 
 
+
 int nbrPlateformes(char** tab_terrain, int n, int m){
     int compteur = 0;
     for(int i = 0; i < n; i++){
-        for(int j = 0; j < m; j++){
-            //'0' et ' ' ne sont pas des platformes mais il represente le background
-            if(tab_terrain[i][j] != '0' && tab_terrain[i][j] != ' '){
+        for(int j = 0; j < m; j++){ //les plateformes c'est de 1 a 6
+            if(tab_terrain[i][j] == '1' || tab_terrain[i][j] == '2' || tab_terrain[i][j] == '3'|| tab_terrain[i][j] == '4' || tab_terrain[i][j] == '5' || tab_terrain[i][j] == '6'){
                 compteur++;
             }
         }
@@ -178,26 +178,34 @@ int nbrPlateformes(char** tab_terrain, int n, int m){
 }
 
 
+int nbrPieces(char** tab_terrain, int n, int m){
+    int compteur = 0;
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < m; j++){ //les plateformes c'est de 1 a 6
+            if(tab_terrain[i][j] == '7'){
+                compteur++;
+            }
+        }
+    }
+    return compteur;
+}
+
 SDL_Rect* init_tab_src_pavage(){
     SDL_Rect *tab_src = malloc(NOMBRE_TEXTURE_PLATFORM * sizeof(SDL_Rect)) ;
     int x,y ;
     y = 0;
-    x = 0;
+    x = PLATFORM_SIZE; // On ignore la premiere (le vert)
     for(int i = 0; i < NOMBRE_TEXTURE_PLATFORM - 1; i++){
         tab_src[i].x = x;
         tab_src[i].y = y;
         tab_src[i].h = PLATFORM_SIZE ;
         tab_src[i].w = PLATFORM_SIZE ;
-
-        if(x == 5*PLATFORM_SIZE){
-            x = 7 * PLATFORM_SIZE ; // on saute des textures qu'on n'a pas besoin
-        }
-        if(x == 10*PLATFORM_SIZE){
-            x = 0; 
-            y = PLATFORM_SIZE ;
-        }
         x += PLATFORM_SIZE; 
     }
+    tab_src[5].x = 0;
+    tab_src[5].y = PLATFORM_SIZE;
+    tab_src[5].h = PLATFORM_SIZE ;
+    tab_src[5].w = PLATFORM_SIZE ;
     return tab_src ;
 }
 
@@ -209,39 +217,29 @@ void init_src_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSprit
             switch (tab_terrain[i][j])
             {
             case '1' :
-                tab_plateFormes[indice_PlateForme].src_rect = tab_src[1];
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[0];
                 indice_PlateForme ++ ;
                 break;
             case '2' :
-                tab_plateFormes[indice_PlateForme].src_rect = tab_src[2];
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[1];
                 indice_PlateForme ++ ;
                 break;
             case '3' :
-                tab_plateFormes[indice_PlateForme].src_rect = tab_src[3];
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[2];
                 indice_PlateForme ++ ;
                 break;
             case '4' :
-                tab_plateFormes[indice_PlateForme].src_rect = tab_src[4];
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[3];
                 indice_PlateForme ++ ;
                 break;
             case '5' :
-                tab_plateFormes[indice_PlateForme].src_rect = tab_src[5];
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[4];
                 indice_PlateForme ++ ;
                 break;
             case '6' :
-                tab_plateFormes[indice_PlateForme].src_rect = tab_src[6];
+                tab_plateFormes[indice_PlateForme].src_rect = tab_src[5];
                 indice_PlateForme ++ ;
-                break;
-            case '7' :
-                tab_plateFormes[indice_PlateForme].src_rect = tab_src[7];
-                indice_PlateForme ++ ;
-                break;            
-            case '8' :
-                tab_plateFormes[indice_PlateForme].src_rect = tab_src[8];
-                indice_PlateForme ++ ;
-                break;                                            
-            default:
-                break;
+                break;                                        
             }
         }
     }
@@ -255,7 +253,7 @@ void init_dest_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSpri
     for(int i = 0; i < n; i++){
         x = 0;
         for(int j = 0; j < m; j++){
-            if(tab_terrain[i][j] != '0' && tab_terrain[i][j] != ' '){
+            if(tab_terrain[i][j] == '1' || tab_terrain[i][j] == '2' || tab_terrain[i][j] == '3'|| tab_terrain[i][j] == '4' || tab_terrain[i][j] == '5' || tab_terrain[i][j] == '6'){
                 tab_plateFormes[indice_PlateForme].dest_rect.x = x;
                 tab_plateFormes[indice_PlateForme].dest_rect.y = y;
                 tab_plateFormes[indice_PlateForme].dest_rect.w = PLATFORM_SIZE;
@@ -309,6 +307,33 @@ void init_player(sprite_t *player, double x, double y) {
     player->vers_la_droite = 1 ;
 }
 
+void init_tab_coins(char ** tab_terrain, int n, int m, fixedSprite_t* tab_coins){
+    int x,y,indice_Piece ;
+    y = 0;
+    indice_Piece = 0;
+    for(int i = 0; i < n; i++){
+        x = 0;
+        for(int j = 0; j < m; j++){
+            if(tab_terrain[i][j] == '7'){
+                tab_coins[indice_Piece].dest_rect.x = x;
+                tab_coins[indice_Piece].dest_rect.y = y;
+                tab_coins[indice_Piece].dest_rect.w = PIECE_SIZE;
+                tab_coins[indice_Piece].dest_rect.h = PIECE_SIZE;
+                indice_Piece++;
+            }
+            x += PLATFORM_SIZE;
+        }
+        y += PLATFORM_SIZE;    
+    }
+}
+
+void init_end_Level(fixedSprite_t *endLevel, double x, double y){
+    endLevel->dest_rect.x = x ;
+    endLevel->dest_rect.y = y ;
+    endLevel->dest_rect.w = ENDLEVEL_WIDTH ;
+    endLevel->dest_rect.h = ENDLEVEL_HEIGHT ;
+}
+
 void init_world(world_t* world, const char* nomFichier){
     world->gameOver = 0 ;
     world->player.weapeon = 0 ;
@@ -320,6 +345,10 @@ void init_world(world_t* world, const char* nomFichier){
     world->tab_platesFormes = malloc(world->nbPlateForme * sizeof(fixedSprite_t)) ;
     init_tab_platesFormes(world->tab_platesFormes, world->tab_terrain, nbLig, nbCol) ;
     init_player(&world->player,0,(nbLig * PLATFORM_SIZE - PLATFORM_SIZE) - SPRITE_HEIGHT) ;
+    world->nbPiece =  nbrPieces(world->tab_terrain, nbLig, nbCol) ;
+    world->tab_coins = malloc(world->nbPiece * sizeof(fixedSprite_t)) ;
+    init_tab_coins(world->tab_terrain, nbLig, nbCol, world->tab_coins) ;
+    init_end_Level(&world->endLevel, nbCol * PLATFORM_SIZE - PLATFORM_SIZE, PLATFORM_SIZE) ;
 }
 
 int is_game_over(world_t *world){
@@ -416,7 +445,7 @@ void handle_events(world_t* world, SDL_Event *event){
     }      
 
     if(state[SDL_SCANCODE_LEFT]){
-
+    //    if(!is_colliding_left_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
         world->player.dest_rect.x -= MOVE_STEP;
         printf("%d\n",world->player.dest_rect.x );
 
@@ -426,11 +455,12 @@ void handle_events(world_t* world, SDL_Event *event){
             world->player.current_frame_walk ++ ;
         }
         world->player.vers_la_droite = 0 ;
+    //    }
         
     }
     
     if(state[SDL_SCANCODE_RIGHT]){
-        
+        // if(!is_colliding_right_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
         world->player.dest_rect.x += MOVE_STEP;
         printf("%d\n",world->player.dest_rect.x );
         if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
@@ -439,19 +469,23 @@ void handle_events(world_t* world, SDL_Event *event){
             world->player.current_frame_walk ++ ;
         }
         world->player.vers_la_droite = 1 ;
+
+        // }
        
     }
 
     if(state[SDL_SCANCODE_UP]){
-
+        //  if(!is_colliding_up_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
         world->player.dest_rect.y -= MOVE_STEP;
         printf("%d\n", world->player.gravity);
+        // }
 
 
     }
     if(state[SDL_SCANCODE_DOWN]){
-   
+        // if(!is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
         world->player.dest_rect.y += MOVE_STEP;
+        // }
             
     }
 
@@ -499,10 +533,31 @@ void update_data(world_t* world, int screen_Height, int screen_Width){
     limite_droite(&world->player, screen_Width);
     collisionDetect(&world->player, world->tab_platesFormes, world->nbPlateForme);
     world->player.dest_rect.y += world->player.gravity;
-    world->player.gravity = GRAVITY;
+    // if(is_colliding_down_with_a_platform(&world->player , world->tab_platesFormes, world->nbPlateForme)){
+    //    printf("collision \n");
+       world->player.gravity = 0; 
+    // }
+    //  else{
+
+        world->player.gravity = GRAVITY;
+
+    // }
+    
+    //gestion de collision avec les bonus
+    handle_colliding_with_piece(&world->player, world->tab_coins, world->nbPiece) ;
+    if(is_colliding(&world->player , &world->endLevel)){
+        world->gameOver = 1 ;
+        printf(" !!!!!!!! You finish the first level with %d/%d coins !!!!!!!! \n", world->player.nbPieceRamasse, world->nbPiece) ;
+    }
+    //la fin du jeu
+    // if(world->player.dest_rect.y + SPRITE_HEIGHT == screen_Height){
+    //     world->gameOver = 1 ;
+    //     printf(" !!!!!!!! Game Over !!!!!!!! \n") ;
+    // }
     
 
 }
+
 
 void collisionDetect(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme){
     //check for collision with any platforms
@@ -522,14 +577,14 @@ void collisionDetect(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbP
 
                 //correct x
                 sprite->dest_rect.x = platform_x + platform_w;
-                joueur_x = platform_x + platform_w;
+                // joueur_x = platform_x + platform_w;
             }
             //rubbing against left edge of plateform
             else if(joueur_x + joueur_w > platform_x &&  joueur_x < platform_x){
 
                 //correct x
                 sprite->dest_rect.x = platform_x - joueur_w;
-                joueur_x = platform_x - joueur_w;
+                //joueur_x = platform_x - joueur_w;
             }
         }
         if(joueur_x + joueur_w > platform_x && joueur_x < platform_x + platform_w){
@@ -559,7 +614,43 @@ void collisionDetect(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbP
 }
 
 
-/*
+bool is_colliding(sprite_t* sprite1, fixedSprite_t* sprite2 ){
+
+    int joueur_x = sprite1->dest_rect.x + sprite1->dest_rect.w/2;
+    int joueur_y = sprite1->dest_rect.y + sprite1->dest_rect.h/2;
+    int piece_x = sprite2->dest_rect.x + sprite2->dest_rect.w/2;
+    int piece_y = sprite2->dest_rect.y + sprite2->dest_rect.h/2;
+        if((abs(joueur_x - piece_x)<(sprite1->dest_rect.w + sprite2->dest_rect.w)/2)&&(abs(joueur_y - piece_y)<(sprite1->dest_rect.h + sprite2->dest_rect.h)/2)){
+            return true;
+        }
+    return false;
+}
+
+// bool is_colliding(sprite_t *sprite1 , fixedSprite_t* sprite2)
+// {
+//     if (sprite1->dest_rect.x < sprite2->dest_rect.x + sprite2->dest_rect.w &&
+//         sprite1->dest_rect.x + sprite1->dest_rect.w > sprite2->dest_rect.x &&
+//         sprite1->dest_rect.y < sprite2->dest_rect.y + sprite2->dest_rect.h &&
+//         sprite1->dest_rect.y + sprite1->dest_rect.h > sprite2->dest_rect.y) 
+//     {
+//         return true ;
+        
+//     }
+//     return false ;
+// }
+
+void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, int nbre_piece){
+    for(int i = 0 ; i < nbre_piece; i++){
+        if(is_colliding(sprite, &tab_coins[i])){
+            tab_coins[i].dest_rect.y = - 1000 ; // la piece disparait s'il est en collision avec le sprite
+            sprite->nbPieceRamasse++;
+        }
+    }
+}
+
+
+
+
 bool is_colliding_right_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_platesFormes, int nbPlateForme)
 {
     for(int i = 0; i < nbPlateForme; i++)
@@ -627,4 +718,6 @@ bool is_colliding_down_with_a_platform(sprite_t *sprite , fixedSprite_t* tab_pla
     }
     return false ;
 }
-*/
+
+
+
