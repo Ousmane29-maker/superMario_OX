@@ -20,8 +20,8 @@ typedef struct ressources_s {
 
 
 /**
- * \brief La fonction initialise les ressources nécessaires à l'affichage graphique du jeu
- * \param renderer surface correspondant à l'écran de jeu
+ * \brief La fonction initialise les ressources nÃ©cessaires Ã  l'affichage graphique du jeu
+ * \param renderer surface correspondant Ã  l'Ã©cran de jeu
  * \param ressources les ressources du jeu
 */
 
@@ -35,12 +35,18 @@ void clean_ressources(ressources_t *ressources);
 
 
 /**
+ * \brief La fonction nettoie les resources
+ * \param resources les resources
+*/
+void clean_ressources(ressources_t *ressources);
+
+/**
  * \brief La fonction initialise la SDL.
- * Elle crée la fenêtre du jeu ainsi que le renderer
- * \param window la fenêtre du jeu
+ * Elle crÃ©e la fenÃªtre du jeu ainsi que le renderer
+ * \param window la fenÃªtre du jeu
  * \param renderer le renderer
- * \param width largeur de l'écran de jeu
- * \param height hauteur de l'écran de jeu
+ * \param width largeur de l'Ã©cran de jeu
+ * \param height hauteur de l'Ã©cran de jeu
  * \return -1 en cas d'erreur, 0 sinon
 */
 
@@ -49,7 +55,7 @@ int init_sdl(SDL_Window **window, SDL_Renderer **renderer, int width, int height
 /**
 *@param nomfichier le nom du fichier
 *@param renderer le renderer
-* charger une image et retourner la surface de texture associée.
+* charger une image et retourner la surface de texture associeÌe.
 */
 SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer);
 
@@ -68,8 +74,8 @@ SDL_Texture* charger_image_transparente(const char* nomfichier,SDL_Renderer* ren
  * @param world le monde
  * @param ecran le renderer
  * @param pavage la texture associe au pavage
- * @param nbre_plateforme le nombre de nbre_plateforme
- * copie tous les sprites dans le rendererÒ
+ * @param nbre_plateforme le nombre de plateforme
+ * copie tous les plateformes dans le renderer
 */
 void SDL_RenderCopyPlateFormes(world_t* world, SDL_Renderer* ecran, SDL_Texture* pavage,int nbre_plateforme);
 
@@ -78,7 +84,7 @@ void SDL_RenderCopyPlateFormes(world_t* world, SDL_Renderer* ecran, SDL_Texture*
  * @param ecran le renderer
  * @param piece la texture associe au piece
  * @param nbre_piece le nombre de piece
- * copie tous les pieces dans le rendererÒ
+ * copie tous les pieces dans le rendererÃ’
 */
 void SDL_RenderCopyPieces(world_t* world, SDL_Renderer* ecran, SDL_Texture* piece,int nbre_piece) ;
 

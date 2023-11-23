@@ -6,14 +6,14 @@
 #include "display.h"
 
 int main() {
-    SDL_Window *fenetre ; // Déclaration de la fenêtre
+    SDL_Window *fenetre ; // DÃ©claration de la fenÃªtre
     SDL_Renderer *ecran ;
-    SDL_Event events; // Événements liés à la fenêtre
+    SDL_Event events; // Ã‰vÃ©nements liÃ©s Ã  la fenÃªtre
     ressources_t ressources ;
     world_t world ;
     int nbLig, nbCol;
     taille_fichier("ressources/terrain.txt", &nbLig, &nbCol);
-    // Initialiser la SDL et créer la fenêtre
+    // Initialiser la SDL et crÃ©er la fenÃªtre
     init_sdl(&fenetre, &ecran, nbCol*PLATFORM_SIZE, nbLig*PLATFORM_SIZE);
     //initialiser les ressources
     init_ressources(ecran, &ressources) ;
@@ -22,23 +22,27 @@ int main() {
 
     //Boucle principale
     while (!is_game_over(&world)) {
-        // Gérer les événements SDL
+        // GÃ©rer les Ã©vÃ©nements SDL
         handle_events(&world, &events);
         // Mise a jour des donnees
         update_data(&world, nbLig*PLATFORM_SIZE, nbCol*PLATFORM_SIZE);
-        // Rafraîchissement de l'écran
+        // RafraÃ®chissement de l'Ã©cran
         refresh_graphics(ecran, &world, &ressources) ;
-         
+        // Attendre environ 100 milliseconde apres la fin du jeu
+        if(is_game_over(&world)){
+            SDL_Delay(1000) ;
+        }
     }
 
-    // Libérer la mémoire
+    // LibÃ©rer la mÃ©moire
     clean_ressources(&ressources);
     SDL_DestroyRenderer(ecran);
     desallouer_tab_2D(world.tab_terrain, nbLig);
     free(world.tab_platesFormes);
+    free(world.tab_coins);
     free(world.player.walk_rects) ;
     free(world.player.walk_with_weapeon_rects) ;
-    free(world.tab_coins);
+    free(world.player.jump_rects) ;
 
     // Quitter SDL
     SDL_DestroyWindow(fenetre);
