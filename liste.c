@@ -85,6 +85,8 @@ void liberer_liste(liste l) {
         free(temp->data.walk_rects) ;
         free(temp->data.walk_with_weapeon_rects) ;
         free(temp->data.jump_rects) ;
+        free(temp->data.attack_rects) ;
+        free(temp->data.attack_with_weapeon_rects) ;
         // Déplacer le pointeur vers le prochain nœud
         l = l->next;      
         // Libérer le nœud actuel    

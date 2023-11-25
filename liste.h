@@ -14,14 +14,20 @@
  * @brief Structure representant un sprite pour l'affichage graphique avec animation.
  */
 typedef struct sprite_s {
-    SDL_Rect* walk_rects; /**< Tableau de rectangles source reprÃ©sentant les diffÃ©rentes images du sprite en marchant. */
+    SDL_Rect* walk_rects; /**< Tableau de rectangles source representant les diffÃ©rentes images du sprite en marchant. */
     SDL_Rect* walk_with_weapeon_rects ; /**< Tableau de rectangles source reprÃ©sentant les diffÃ©rentes images du sprite en marchant. */
-    SDL_Rect* jump_rects ; /**< Tableau de rectangles source reprÃ©sentant les diffÃ©rentes images du sprite en sautant. */
+    SDL_Rect* jump_rects ; /**< Tableau de rectangles source representant les diffÃ©rentes images du sprite en sautant. */
+    SDL_Rect* attack_rects ; /**< Tableau de rectangles source representant les differentes images du sprite en attaquant*/
+    SDL_Rect* attack_with_weapeon_rects ; /**< Tableau de rectangles source representant les differentes images du sprite en attaquant avec l'arme*/
     SDL_Rect dest_rect; /**< Rectangle de destination reprÃ©sentant la position et les dimensions sur l'Ã©cran. */
     int weapeon ; /**< champ indiquant si le personnage est armee ou pas */
-    int current_frame_walk; /**< Frame walk actuelle affichÃ©e. */
+    int current_frame_walk; /**< Frame walk actuelle affiché. */
     int vers_la_droite; /**< Champ indiquant si le sprite va vers la droite  */
     int current_frame_jump ; /**< Champ indiquant le moment du saut */
+    int current_frame_attack ; /**<  Frame attack actuelle affiché. */
+    int current_frame_attack_with_weapeon ; /**<  Frame attack avec une arme actuelle affiché. */
+    int is_attacking ; /**< Champ indiquant si le sprite est entrain d'attaquer ou pas */
+    int HP ; /**< Champ indiquant le point de vie d'un sprite */
     int nbPieceRamasse ; /**< Champ correspondant au nombre de piece ramassÃ©. */
 } sprite_t;
 

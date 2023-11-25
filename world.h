@@ -68,11 +68,27 @@
 */
 #define NOMBRE_FRAMES_JUMP 7
 
+/**
+ * Nombre de frames (images) attack sans arme dans l'animation du joueur. 
+*/
+#define NOMBRE_FRAMES_ATTACK 13
+
+/**
+ * Nombre de frames (images) attack avec arme dans l'animation du joueur. 
+*/
+#define NOMBRE_FRAMES_ATTACK_WITH_WEAPEON 6
+
+
+/**
+ * le point de vie initial d'un sprite. 
+*/
+#define HP_INITIAL 100
+
 
 /**
  * la gravite du jeu 
 */
-#define GRAVITY 1
+#define GRAVITY 2
 
 /**
  * la largeur du drapeau 
@@ -385,6 +401,18 @@ bool is_colliding(sprite_t *sprite1 , fixedSprite_t* sprite2) ;
 */
 void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, int nbre_piece) ;
 
+/**
+* \brief la fonction qui permet de deplacer les ennemis
+* \param ennemis liste des ennemis  
+* \param tab_platesFormes le tableau de plateformes
+* \param nbPlateForme le nombre de plateforme
+*/
 void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
+
+/**
+ * \brief la fonction qui permet au joueur d'attaquer les ennemis
+ * \param player le joueur
+*/
+void attack_player(sprite_t* player) ;
 
 #endif

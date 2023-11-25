@@ -279,6 +279,10 @@ void init_sprite(sprite_t *sprite, double x, double y, int w, int h,int weapon) 
     sprite->vers_la_droite = 1 ;
     sprite->current_frame_jump = 0 ;
     sprite->nbPieceRamasse = 0 ;
+    sprite->current_frame_attack = 0 ;
+    sprite->current_frame_attack_with_weapeon = 0 ;
+    sprite->is_attacking = 0 ;
+    sprite->HP = HP_INITIAL ;
 
     sprite->walk_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
     int x_src , y_src ;
@@ -313,6 +317,28 @@ void init_sprite(sprite_t *sprite, double x, double y, int w, int h,int weapon) 
         sprite->jump_rects [i].h = IMAGE_SPRITE_HEIGHT;
         x_src = x_src + 64 ;
     }
+    
+    sprite->attack_rects = malloc(NOMBRE_FRAMES_ATTACK * sizeof(SDL_Rect)) ;
+    x_src = 20 ;
+    y_src = 1227 ; //
+    for(int i = 0 ; i < NOMBRE_FRAMES_ATTACK; i++){
+        sprite->attack_rects [i].x = x_src ;
+        sprite->attack_rects [i].y = y_src ;
+        sprite->attack_rects [i].w = IMAGE_SPRITE_WIDTH ;
+        sprite->attack_rects [i].h = IMAGE_SPRITE_HEIGHT;
+        x_src = x_src + 64 ;
+    }
+    sprite->attack_with_weapeon_rects = malloc(NOMBRE_FRAMES_ATTACK_WITH_WEAPEON * sizeof(SDL_Rect)) ;
+    x_src = 45 ;
+    y_src = 2285 ; // 
+    for(int i = 0 ; i < NOMBRE_FRAMES_ATTACK_WITH_WEAPEON; i++){
+        sprite->attack_with_weapeon_rects [i].x = x_src ;
+        sprite->attack_with_weapeon_rects [i].y = y_src ;
+        sprite->attack_with_weapeon_rects [i].w = IMAGE_ARMED_SPRITE_WIDTH ;
+        sprite->attack_with_weapeon_rects [i].h = IMAGE_SPRITE_HEIGHT;
+        x_src = x_src + 129 ;
+    }
+
     //destination
     sprite->dest_rect.x = x ;
     sprite->dest_rect.y = y ;
@@ -440,6 +466,13 @@ void handle_events(world_t *world, SDL_Event *event) {
                             world->player.dest_rect.w = SPRITE_WIDTH ;
                         }  
                         break; 
+                    case SDLK_a :
+                        if(world->player.is_attacking == 0 ){
+                            world->player.is_attacking = 1 ; 
+                            if(world->player.weapeon == 1 ){
+                                world->player.current_frame_walk = 5 ;
+                            }
+                        }  
                 }   
         }
     }
@@ -493,12 +526,13 @@ void update_data(world_t* world, int screen_Height, int screen_Width){
     }
     if(world->player.current_frame_jump == 0){
         world->player.dest_rect.y += world->gravity ;
-        SDL_Delay(10) ;
     }else{ //is_jumping
         jump(&world->player, world) ;
     }
     //gestion de collision avec les bonus
     handle_colliding_with_piece(&world->player, world->tab_coins, world->nbPiece) ;
+    //attack du joueur
+    attack_player(&world->player) ;
     // deplacement des ennemis
     moving_ennemis(world->ennemis, world->tab_platesFormes, world->nbPlateForme )  ;
     //geston colision avec le drapeau
@@ -593,18 +627,17 @@ void jump(sprite_t *sprite, world_t *world){
         world->player.weapeon = 0 ; // on range l'arme
         world->player.dest_rect.w = SPRITE_WIDTH ; // largeur par defaut 
         sprite->current_frame_jump ++ ;
-        if(sprite->current_frame_jump <= NOMBRE_FRAMES_JUMP/2 ){
+        if(sprite->current_frame_jump <= NOMBRE_FRAMES_JUMP/2){
             if(!is_colliding_up_with_a_platform(sprite, world->tab_platesFormes, world->nbPlateForme)){
                 sprite->dest_rect.y -= 20 ; // On monte de 20 a chaque monte du saut
             }else{
                 sprite->current_frame_jump =  NOMBRE_FRAMES_JUMP/2 ;
             }
-            SDL_Delay(80);
+            SDL_Delay(40);
         }else{
             if(!is_colliding_down_with_a_platform(sprite, world->tab_platesFormes, world->nbPlateForme)){
-                sprite->dest_rect.y += 1 ; // On descend de 1 a chaque descente du saut
+                sprite->dest_rect.y += 2 ; // On descend de 1 a chaque descente du saut
             }
-            SDL_Delay(40);
         }
         //se deplacer soit a gauche soit a droite  en sautant
         if(sprite->vers_la_droite == 1){
@@ -673,5 +706,23 @@ void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateF
         }
 
         temp = next(temp);
+    }
+}
+
+void attack_player(sprite_t* player){
+    if(player->is_attacking == 1){ // is_attacking
+        if(player->weapeon == 0){ //sans arme
+            player->current_frame_attack ++ ;
+            if(player->current_frame_attack == NOMBRE_FRAMES_ATTACK - 1){ // fin attack
+                player->is_attacking = 0 ; // initial
+                player->current_frame_attack = 0 ; // initial
+            }
+        }else{ // avec arme
+            player->current_frame_attack_with_weapeon ++ ;
+            if(player->current_frame_attack_with_weapeon == NOMBRE_FRAMES_ATTACK_WITH_WEAPEON - 1){ // fin attack
+                player->is_attacking = 0 ; // initial
+                player->current_frame_attack_with_weapeon = 0 ; // initial
+            }
+        }
     }
 }

@@ -28,11 +28,12 @@ int main() {
         update_data(&world, nbLig*PLATFORM_SIZE, nbCol*PLATFORM_SIZE);
         // RafraÃ®chissement de l'Ã©cran
         refresh_graphics(ecran, &world, &ressources) ;
-        // Attendre environ 100 milliseconde apres la fin du jeu
+        // pause de 20 ms a chaque tour de boucle pour bien gerer l'affichage
+        SDL_Delay(20);
+        // Attendre environ 1000 milliseconde apres la fin du jeu
         if(is_game_over(&world)){
             SDL_Delay(1000) ;
         }
-        
     }
 
     // LibÃ©rer la mÃ©moire
@@ -44,6 +45,8 @@ int main() {
     free(world.player.walk_rects) ;
     free(world.player.walk_with_weapeon_rects) ;
     free(world.player.jump_rects) ;
+    free(world.player.attack_rects) ;
+    free(world.player.attack_with_weapeon_rects) ;
     liberer_liste(world.ennemis) ; 
     // Quitter SDL
     SDL_DestroyWindow(fenetre);
