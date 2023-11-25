@@ -2,7 +2,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 
-#include <SDL2/SDL.h> 
+#include "liste.h"
 #include <stdbool.h>
 
 
@@ -17,17 +17,17 @@
 #define PIECE_SIZE 20
 
 /**
- * la taille d'un sprites
+ * le nombre de texture representant un plateformes dans limage pavage
 */
 #define NOMBRE_TEXTURE_PLATFORM 6
 
 /**
- * la hauteur du joueur
+ * la hauteur du sprite
 */
 #define SPRITE_HEIGHT 50
 
 /**
- * la largeur du joueur
+ * la largeur du sprite
 */
 #define SPRITE_WIDTH 30
 
@@ -45,17 +45,17 @@
 /**
  * la hauteur de l'image (src) du sprite 
 */
-#define IMAGE_PLAYER_HEIGHT 50
+#define IMAGE_SPRITE_HEIGHT 50
 
 /**
  * la largeur de l'image (src) du sprite 
 */
-#define IMAGE_PLAYER_WIDTH 28
+#define IMAGE_SPRITE_WIDTH 28
 
 /**
  * la largeur de l'image (src) du sprite armee  
 */
-#define IMAGE_ARMED_PLAYER_WIDTH 60
+#define IMAGE_ARMED_SPRITE_WIDTH 60
 
 /**
  * Nombre de frames (images) walk  dans l'animation du joueur. 
@@ -93,20 +93,6 @@ typedef struct fixedSprite_s {
     SDL_Rect dest_rect; /**< Rectangle de destination reprÃ©sentant la position et les dimensions sur l'Ã©cran. */
 } fixedSprite_t;
 
-/**
- * @brief Structure reprÃ©sentant un sprite pour l'affichage graphique avec animation.
- */
-typedef struct sprite_s {
-    SDL_Rect* walk_rects; /**< Tableau de rectangles source reprÃ©sentant les diffÃ©rentes images du sprite en marchant. */
-    SDL_Rect* walk_with_weapeon_rects ; /**< Tableau de rectangles source reprÃ©sentant les diffÃ©rentes images du sprite en marchant. */
-    SDL_Rect* jump_rects ; /**< Tableau de rectangles source reprÃ©sentant les diffÃ©rentes images du sprite en sautant. */
-    SDL_Rect dest_rect; /**< Rectangle de destination reprÃ©sentant la position et les dimensions sur l'Ã©cran. */
-    int weapeon ; /**< champ indiquant si le personnage est armee ou pas */
-    int current_frame_walk; /**< Frame walk actuelle affichÃ©e. */
-    int vers_la_droite; /**< Champ indiquant si le sprite va vers la droite  */
-    int current_frame_jump ; /**< Champ indiquant le moment du saut */
-    int nbPieceRamasse ; /**< Champ correspondant au nombre de piece ramassÃ©. */
-} sprite_t;
 
 /**
  * @brief ReprÃ©sentation du monde du jeu.
@@ -115,12 +101,14 @@ typedef struct world_s {
     char** tab_terrain ; /**< Champ representant le tableau de caracteres */
     int gameOver ; /**< Champ indiquant si l'on est Ã  la fin du jeu. */
     int gravity ; /**< Champ indiquant la gravite */
+    int level ; /**< Champ indiquant le level actuel */
     sprite_t player; /**< Champ indiquant le joueur. */
     fixedSprite_t endLevel ;  /**< Champ indiquant le drapeau de fin de jeu. */
     fixedSprite_t* tab_platesFormes; /**< Champ correspondant au tableau de plates-formes. */
     int nbPlateForme ; /**< Champ correspondant au nombre de plates-formes. */
     fixedSprite_t* tab_coins ; /**< Champ correspondant au tableau de pieces. */
     int nbPiece ; /**< Champ correspondant au nombre de plates-formes. */
+    liste ennemis ;  /**< liste de sprite_t (les ennemies) */
 } world_t;
     
 
@@ -238,13 +226,21 @@ void init_dest_rect_tab_plateFormes(char ** tab_terrain, int n, int m, fixedSpri
 void init_tab_platesFormes(fixedSprite_t* tab_plateFormes, char ** tab_terrain, int n, int m) ;
 
 /**
-* \param player pointeur vers sprite_t
-* \param x l'abscisse initial du joueur 
-* \param y l'ordonne intial du joueur
+* \param sprite pointeur vers sprite_t
+* \param x l'abscisse initial du sprite 
+* \param y l'ordonne intial du sprite
+* \param w la largeur initiale du sprite
+* \param h la hauteur initiale du sprite
+* \param weapon l'arme
 * \brief initialise le joueur
 */
-void init_player(sprite_t *player, double x, double y);
+void init_sprite(sprite_t *sprite, double x, double y, int w, int h,int weapon) ;
 
+
+/**
+ * \brief initialise les ennemis du niveau1
+*/
+liste init_ennemis_level1() ;
 /**
 * \param endLevel  pointeur vers fixedSprite_t
 * \param x l'abscisse initial du joueur 
@@ -388,5 +384,7 @@ bool is_colliding(sprite_t *sprite1 , fixedSprite_t* sprite2) ;
 * \param nbre_piece le nombre de piece
 */
 void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, int nbre_piece) ;
+
+void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
 
 #endif

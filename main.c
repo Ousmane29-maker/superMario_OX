@@ -32,6 +32,7 @@ int main() {
         if(is_game_over(&world)){
             SDL_Delay(1000) ;
         }
+        
     }
 
     // LibÃ©rer la mÃ©moire
@@ -43,7 +44,7 @@ int main() {
     free(world.player.walk_rects) ;
     free(world.player.walk_with_weapeon_rects) ;
     free(world.player.jump_rects) ;
-
+    liberer_liste(world.ennemis) ; 
     // Quitter SDL
     SDL_DestroyWindow(fenetre);
     SDL_Quit();

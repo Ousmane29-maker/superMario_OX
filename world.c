@@ -273,51 +273,51 @@ void init_tab_platesFormes(fixedSprite_t* tab_plateFormes, char ** tab_terrain, 
     init_dest_rect_tab_plateFormes(tab_terrain, n, m, tab_plateFormes) ;
 }
 
-void init_player(sprite_t *player, double x, double y) {
-    player->weapeon = 0 ;
-    player->current_frame_walk = 0 ;
-    player->vers_la_droite = 1 ;
-    player->current_frame_jump = 0 ;
-    player->nbPieceRamasse = 0 ;
+void init_sprite(sprite_t *sprite, double x, double y, int w, int h,int weapon) {
+    sprite->weapeon = weapon ;
+    sprite->current_frame_walk = 0 ;
+    sprite->vers_la_droite = 1 ;
+    sprite->current_frame_jump = 0 ;
+    sprite->nbPieceRamasse = 0 ;
 
-    player->walk_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
+    sprite->walk_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
     int x_src , y_src ;
     x_src = 20 ;
-    y_src = 11 * (IMAGE_PLAYER_HEIGHT + 15 ) ; // la 11eme ligne dans l'image du joueur (15 pixel entre chaque ligne)
+    y_src = 11 * (IMAGE_SPRITE_HEIGHT + 15 ) ; // la 11eme ligne dans l'image du joueur (15 pixel entre chaque ligne)
     for(int i = 0 ; i <  NOMBRE_FRAMES_WALK; i++){
-        player->walk_rects [i].x = x_src ;
-        player->walk_rects [i].y = y_src ;
-        player->walk_rects [i].w = IMAGE_PLAYER_WIDTH;
-        player->walk_rects [i].h = IMAGE_PLAYER_HEIGHT;
+        sprite->walk_rects [i].x = x_src ;
+        sprite->walk_rects [i].y = y_src ;
+        sprite->walk_rects [i].w = IMAGE_SPRITE_WIDTH;
+        sprite->walk_rects [i].h = IMAGE_SPRITE_HEIGHT;
         x_src = x_src + 64 ;
     }
 
-    player->walk_with_weapeon_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
+    sprite->walk_with_weapeon_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
     x_src = 45 ;
     y_src = 1770 ;
     for(int i = 0 ; i < NOMBRE_FRAMES_WALK; i++){
-        player->walk_with_weapeon_rects [i].x = x_src ;
-        player->walk_with_weapeon_rects [i].y = y_src ;
-        player->walk_with_weapeon_rects [i].w = IMAGE_ARMED_PLAYER_WIDTH;
-        player->walk_with_weapeon_rects [i].h = IMAGE_PLAYER_HEIGHT;
+        sprite->walk_with_weapeon_rects [i].x = x_src ;
+        sprite->walk_with_weapeon_rects [i].y = y_src ;
+        sprite->walk_with_weapeon_rects [i].w = IMAGE_ARMED_SPRITE_WIDTH;
+        sprite->walk_with_weapeon_rects [i].h = IMAGE_SPRITE_HEIGHT;
         x_src = x_src + 129 ;
     }
 
-    player->jump_rects = malloc(NOMBRE_FRAMES_JUMP * sizeof(SDL_Rect)) ;
+    sprite->jump_rects = malloc(NOMBRE_FRAMES_JUMP * sizeof(SDL_Rect)) ;
     x_src = 20 ;
     y_src = 206 ;
     for(int i = 0 ; i < NOMBRE_FRAMES_JUMP; i++){
-        player->jump_rects [i].x = x_src ;
-        player->jump_rects [i].y = y_src ;
-        player->jump_rects [i].w = IMAGE_PLAYER_WIDTH ;
-        player->jump_rects [i].h = IMAGE_PLAYER_HEIGHT;
+        sprite->jump_rects [i].x = x_src ;
+        sprite->jump_rects [i].y = y_src ;
+        sprite->jump_rects [i].w = IMAGE_SPRITE_WIDTH ;
+        sprite->jump_rects [i].h = IMAGE_SPRITE_HEIGHT;
         x_src = x_src + 64 ;
     }
     //destination
-    player->dest_rect.x = x ;
-    player->dest_rect.y = y ;
-    player->dest_rect.w = SPRITE_WIDTH;
-    player->dest_rect.h = SPRITE_HEIGHT ;
+    sprite->dest_rect.x = x ;
+    sprite->dest_rect.y = y ;
+    sprite->dest_rect.w = w;
+    sprite->dest_rect.h = h ;
 
 }
 
@@ -348,9 +348,25 @@ void init_tab_coins(char ** tab_terrain, int n, int m, fixedSprite_t* tab_coins)
     }
 }
 
+
+liste init_ennemis_level1(){
+    liste ennemis = cons_empty() ;
+    sprite_t ennemy ;
+    //initialisation de 3 ennemis
+    init_sprite(&ennemy,870, 48, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
+    ennemis = cons(ennemy, ennemis) ;
+    init_sprite(&ennemy,400, 206, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
+    ennemis = cons(ennemy, ennemis) ;
+    init_sprite(&ennemy,600, 400, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
+    ennemis = cons(ennemy, ennemis) ;
+    return ennemis ;
+
+}
+
 void init_world(world_t* world, const char* nomFichier){
     world->gameOver = 0 ;
     world->gravity = GRAVITY;
+    world->level = 1 ;
     int nbLig, nbCol;
     taille_fichier(nomFichier, &nbLig, &nbCol);
     world->tab_terrain = lire_fichier(nomFichier) ; // allocation memoire inclu
@@ -361,7 +377,7 @@ void init_world(world_t* world, const char* nomFichier){
     exit(EXIT_FAILURE);  // Quitter le programme en cas d'erreur critique
     }
     init_tab_platesFormes(world->tab_platesFormes, world->tab_terrain, nbLig, nbCol) ;
-    init_player(&world->player,0,(nbLig * PLATFORM_SIZE - PLATFORM_SIZE) - SPRITE_HEIGHT) ;
+    init_sprite(&world->player,0,(nbLig * PLATFORM_SIZE - PLATFORM_SIZE) - SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT,0) ;
     init_end_Level(&world->endLevel, nbCol * PLATFORM_SIZE - PLATFORM_SIZE, PLATFORM_SIZE) ;
     world->nbPiece =  nbrPieces(world->tab_terrain, nbLig, nbCol) ;
     world->tab_coins = malloc(world->nbPiece * sizeof(fixedSprite_t)) ;
@@ -370,6 +386,7 @@ void init_world(world_t* world, const char* nomFichier){
     exit(EXIT_FAILURE);  // Quitter le programme en cas d'erreur critique
     }
     init_tab_coins(world->tab_terrain, nbLig, nbCol, world->tab_coins) ;
+    world->ennemis = init_ennemis_level1() ;
 }
 
 int is_game_over(world_t *world){
@@ -441,7 +458,7 @@ void limite_haut(sprite_t* sprite){
 }
 
 void limite_bas(sprite_t* sprite, int screen_Height){
-    if(sprite->dest_rect.y + IMAGE_PLAYER_HEIGHT > screen_Height){
+    if(sprite->dest_rect.y + SPRITE_HEIGHT > screen_Height){
 
         sprite->dest_rect.y = screen_Height - SPRITE_HEIGHT;
 
@@ -476,11 +493,14 @@ void update_data(world_t* world, int screen_Height, int screen_Width){
     }
     if(world->player.current_frame_jump == 0){
         world->player.dest_rect.y += world->gravity ;
+        SDL_Delay(10) ;
     }else{ //is_jumping
         jump(&world->player, world) ;
     }
     //gestion de collision avec les bonus
     handle_colliding_with_piece(&world->player, world->tab_coins, world->nbPiece) ;
+    // deplacement des ennemis
+    moving_ennemis(world->ennemis, world->tab_platesFormes, world->nbPlateForme )  ;
     //geston colision avec le drapeau
     if(is_colliding(&world->player , &world->endLevel)){
         world->gameOver = 1 ;
@@ -619,5 +639,39 @@ void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, in
             tab_coins[i].dest_rect.y = - 100 ; // la piece disparait s'il est en collision avec le sprite
             sprite->nbPieceRamasse ++ ;
         }
+    }
+}
+
+void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme) {
+    liste temp = ennemis;
+    while (!is_empty(temp)) {
+        sprite_t current_sprite = value(temp);
+
+        // Collision en bas avec une plate-forme
+        if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 1) {
+            change_value_x(temp, current_sprite.dest_rect.x + 1);
+        }
+        if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 0) {
+            change_value_x(temp, current_sprite.dest_rect.x - 1);
+        }
+
+        // Pas de collision en bas avec une plate-forme
+        if (!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 1) {
+            change_value_vers_la_droite(temp, 0);
+            change_value_x(temp, current_sprite.dest_rect.x - 1);
+        }
+        if (!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 0) {
+            change_value_vers_la_droite(temp, 1);
+            change_value_x(temp, current_sprite.dest_rect.x + 1);
+        }
+
+        // Gestion du frame walk
+        if (current_sprite.current_frame_walk == NOMBRE_FRAMES_WALK - 1) {
+            change_value_current_frame_walk(temp, 0);
+        } else {
+            change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
+        }
+
+        temp = next(temp);
     }
 }

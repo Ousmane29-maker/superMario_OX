@@ -4,7 +4,7 @@ LIBS =
 LDFLAGS = `sdl2-config --cflags --libs` 
 INCLUDES = 
 EXEC = superMario_OX
-SRC = main.c world.c display.c
+SRC = main.c world.c display.c liste.c
 OBJ = $(SRC:.c=.o)
 all: $(EXEC)
 superMario_OX: $(OBJ)

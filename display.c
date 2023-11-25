@@ -22,6 +22,7 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
     ressources->terrain = "ressources/terrain.txt" ;
     ressources->background= charger_image("ressources/fond.bmp", renderer) ;
     ressources->playerTexture = charger_image("ressources/player.bmp", renderer) ;
+    ressources->ennemyTexture = charger_image("ressources/ennemy.bmp", renderer) ;
     ressources->endLevel = charger_image_transparente("ressources/endLevel.bmp", renderer, 255,255,255) ;
     ressources->pavage = charger_image("ressources/pavage.bmp", renderer) ;
     ressources->piece = charger_image("ressources/piece.bmp", renderer) ;
@@ -31,6 +32,7 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
 void clean_ressources(ressources_t *ressources){
     SDL_DestroyTexture(ressources->pavage);
     SDL_DestroyTexture(ressources->playerTexture);
+    SDL_DestroyTexture(ressources->ennemyTexture);
     SDL_DestroyTexture(ressources->background);
     SDL_DestroyTexture(ressources->endLevel);
     SDL_DestroyTexture(ressources->piece);
@@ -97,16 +99,48 @@ SDL_Texture* charger_image_transparente(const char* nomfichier, SDL_Renderer* re
 }
 
 
-void SDL_RenderCopyPlateFormes(world_t* world, SDL_Renderer* ecran, SDL_Texture* pavage,int nbre_plateforme){
+void SDL_RenderCopyPlateFormes(fixedSprite_t* tab_platesFormes, SDL_Renderer* renderer, SDL_Texture* pavage,int nbre_plateforme){
     for(int i = 0; i < nbre_plateforme; i++){
-        SDL_RenderCopy(ecran,pavage, &world->tab_platesFormes[i].src_rect, &world->tab_platesFormes[i].dest_rect);
+        SDL_RenderCopy(renderer, pavage, &tab_platesFormes[i].src_rect, &tab_platesFormes[i].dest_rect);
     }
 }
 
 
-void SDL_RenderCopyPieces(world_t* world, SDL_Renderer* ecran, SDL_Texture* piece,int nbre_piece){
+void SDL_RenderCopyPieces(fixedSprite_t* tab_coins, SDL_Renderer* renderer, SDL_Texture* piece, int nbre_piece){
     for(int i = 0; i < nbre_piece; i++){
-        SDL_RenderCopy(ecran,piece, NULL, &world->tab_coins[i].dest_rect);
+        SDL_RenderCopy(renderer, piece, NULL, &tab_coins[i].dest_rect);
+    }
+}
+
+void SDL_RenderCopySprite(sprite_t* sprite, SDL_Renderer* renderer, SDL_Texture* spriteTexture){
+     if(is_jumping(sprite)){
+       if(sprite->vers_la_droite == 1){
+            SDL_RenderCopy(renderer, spriteTexture, &sprite->jump_rects[sprite->current_frame_jump], &sprite->dest_rect);
+        }else{
+            SDL_RenderCopyEx(renderer, spriteTexture, &sprite->jump_rects[sprite->current_frame_jump],& sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+        } 
+    }else{
+        if(sprite->weapeon == 0){
+            if(sprite->vers_la_droite == 1){
+                SDL_RenderCopy(renderer, spriteTexture, &sprite->walk_rects[sprite->current_frame_walk], &sprite->dest_rect);
+            }else{
+                SDL_RenderCopyEx(renderer, spriteTexture, &sprite->walk_rects[sprite->current_frame_walk], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+            }
+        }else{
+            if(sprite->vers_la_droite == 1){
+                SDL_RenderCopy(renderer, spriteTexture, &sprite->walk_with_weapeon_rects[sprite->current_frame_walk], &sprite->dest_rect);
+            }else{
+                SDL_RenderCopyEx(renderer, spriteTexture, &sprite->walk_with_weapeon_rects[sprite->current_frame_walk], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+            }
+        }
+    }
+}
+
+void SDL_RenderCopyEnnemis(liste ennemis, SDL_Renderer* renderer, SDL_Texture* ennemyTexture){
+    liste temp = ennemis ;
+    while(! is_empty(temp)){
+        SDL_RenderCopySprite(&temp->data, renderer, ennemyTexture) ;
+        temp = next(temp) ;
     }
 }
 
@@ -115,34 +149,15 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     // le fond
     SDL_RenderCopy(renderer, ressources->background,NULL, NULL);
     // Copier les platformes dans le renderer
-    SDL_RenderCopyPlateFormes(world, renderer, ressources->pavage, world->nbPlateForme);
+    SDL_RenderCopyPlateFormes(world->tab_platesFormes, renderer, ressources->pavage, world->nbPlateForme);
     // Copier les pieces dans le renderer
-    SDL_RenderCopyPieces(world, renderer, ressources->piece, world->nbPiece);
+    SDL_RenderCopyPieces(world->tab_coins, renderer, ressources->piece, world->nbPiece);
     // Copier le drapeau dans le renderer
     SDL_RenderCopy(renderer, ressources->endLevel, NULL, &world->endLevel.dest_rect);
     // Copier le joueur dans le renderer
-    if(is_jumping(&world->player)){
-       if(world->player.vers_la_droite == 1){
-            SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.jump_rects[world->player.current_frame_jump], &world->player.dest_rect);
-        }else{
-            SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.jump_rects[world->player.current_frame_jump], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-        } 
-    }else{
-        if(world->player.weapeon == 0){
-            if(world->player.vers_la_droite == 1){
-                SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect);
-            }else{
-                SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-            }
-        }else{
-            if(world->player.vers_la_droite == 1){
-                SDL_RenderCopy(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect);
-            }else{
-                SDL_RenderCopyEx(renderer, ressources->playerTexture, &world->player.walk_with_weapeon_rects[world->player.current_frame_walk], &world->player.dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-            }
-        }
-    }
-    
+    SDL_RenderCopySprite(&world->player, renderer, ressources->playerTexture) ;
+    // Copier les ennemis dans le renderer
+    SDL_RenderCopyEnnemis(world->ennemis,renderer, ressources->ennemyTexture) ;
     // Afficher tout dans la fenÃªtre
     SDL_RenderPresent(renderer);
 }
