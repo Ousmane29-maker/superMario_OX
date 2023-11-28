@@ -165,7 +165,7 @@ void SDL_RenderCopyEnnemis(liste ennemis, SDL_Renderer* renderer, SDL_Texture* e
 }
 
 void SDL_RenderCopyMenu(SDL_Renderer* renderer, SDL_Texture *menu, fixedSprite_t* tab_menu){
-    for(int i = 0; i < 2; i++){
+    for(int i = 0; i < NOMBRE_LABELS; i++){
 
         SDL_RenderCopy(renderer, menu, &tab_menu[i].src_rect, &tab_menu[i].dest_rect);
 

@@ -104,7 +104,7 @@
 
 #define LABEL_WIDTH 143
 
-#define NOMBRE_LABELS 4
+#define NOMBRE_LABELS 2
 
 
 /**
@@ -424,14 +424,33 @@ void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateF
 */
 void attack_player(sprite_t* player) ;
 
+/**
+ * \brief la fonction qui permet au joueur d'attaquer les ennemis
+ * \param tab_menu le menu du jeu
+*/
 void init_tab_Src_Menu(fixedSprite_t* tab_menu);
 
+/**
+* \brief la fonction qui permet de deplacer les ennemis
+* \param tab_menu le menu du jeu 
+* \param line le hauteur de la fenetre
+* \param clone la largeur de la fenetre
+*/
 void init_tab_Dest_Menu(fixedSprite_t* tab_menu, int line, int clone);
 
+/**
+* \brief la fonction qui permet de deplacer les ennemis
+* \param tab_menu le menu du jeu 
+* \param line le hauteur de la fenetre
+* \param clone la largeur de la fenetre
+*/
 void init_tab_menu(fixedSprite_t* tab_menu, int line, int clone);
 
-bool is_click_play(fixedSprite_t* tab_menu, int position_x, int position_y);
-
+/**
+* @return un tableau de SDL_Rect initialise representant les src associe a chaque labels du menu
+*/
 SDL_Rect* init_tab_src_labels();
+
+bool is_click_play(fixedSprite_t* tab_menu, int position_x, int position_y);
 
 #endif

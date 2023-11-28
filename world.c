@@ -407,8 +407,12 @@ SDL_Rect* init_tab_src_labels(){
 void init_tab_Src_Menu(fixedSprite_t* tab_menu){
 
     SDL_Rect* tab_src_labels = init_tab_src_labels();
-    tab_menu[0].src_rect = tab_src_labels[0];
-    tab_menu[1].src_rect = tab_src_labels[1];
+    for(int i = 0; i < NOMBRE_LABELS; i++){
+
+        tab_menu[i].src_rect = tab_src_labels[i];
+
+    }
+
     free(tab_src_labels);
 }
 
