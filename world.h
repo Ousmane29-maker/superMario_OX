@@ -100,6 +100,12 @@
 */
 #define ENDLEVEL_HEIGHT 64
 
+#define LABEL_HEIGHT 42
+
+#define LABEL_WIDTH 143
+
+#define NOMBRE_LABELS 4
+
 
 /**
  * @brief Structure reprÃ©sentant une plateforme statique pour l'affichage graphique.
@@ -125,6 +131,9 @@ typedef struct world_s {
     fixedSprite_t* tab_coins ; /**< Champ correspondant au tableau de pieces. */
     int nbPiece ; /**< Champ correspondant au nombre de plates-formes. */
     liste ennemis ;  /**< liste de sprite_t (les ennemies) */
+    // SDL_Rect* tab_Src_Menu; /**< Champ correspondant au tableau de menu. */
+    // SDL_Rect* tab_Dest_Menu; /**< Champ correspondant au tableau de menu. */
+    fixedSprite_t* tab_menu;
 } world_t;
     
 
@@ -414,5 +423,15 @@ void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateF
  * \param player le joueur
 */
 void attack_player(sprite_t* player) ;
+
+void init_tab_Src_Menu(fixedSprite_t* tab_menu);
+
+void init_tab_Dest_Menu(fixedSprite_t* tab_menu, int line, int clone);
+
+void init_tab_menu(fixedSprite_t* tab_menu, int line, int clone);
+
+bool is_click_play(fixedSprite_t* tab_menu, int position_x, int position_y);
+
+SDL_Rect* init_tab_src_labels();
 
 #endif

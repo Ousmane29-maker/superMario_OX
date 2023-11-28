@@ -26,6 +26,8 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
     ressources->endLevel = charger_image_transparente("ressources/endLevel.bmp", renderer, 255,255,255) ;
     ressources->pavage = charger_image("ressources/pavage.bmp", renderer) ;
     ressources->piece = charger_image("ressources/piece.bmp", renderer) ;
+    ressources->menu = charger_image("ressources/menu.bmp", renderer) ;
+    ressources->menubackground = charger_image("ressources/menubackground.bmp", renderer) ;
 
 }
 
@@ -36,6 +38,8 @@ void clean_ressources(ressources_t *ressources){
     SDL_DestroyTexture(ressources->background);
     SDL_DestroyTexture(ressources->endLevel);
     SDL_DestroyTexture(ressources->piece);
+    SDL_DestroyTexture(ressources->menu);
+    SDL_DestroyTexture(ressources->menubackground);
 }
 
 SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer){
@@ -160,8 +164,17 @@ void SDL_RenderCopyEnnemis(liste ennemis, SDL_Renderer* renderer, SDL_Texture* e
     }
 }
 
+void SDL_RenderCopyMenu(SDL_Renderer* renderer, SDL_Texture *menu, fixedSprite_t* tab_menu){
+    for(int i = 0; i < 2; i++){
+
+        SDL_RenderCopy(renderer, menu, &tab_menu[i].src_rect, &tab_menu[i].dest_rect);
+
+    }
+
+}
+
 void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources){
-    SDL_RenderClear(renderer);
+    SDL_RenderClear(renderer);   
     // le fond
     SDL_RenderCopy(renderer, ressources->background,NULL, NULL);
     // Copier les platformes dans le renderer

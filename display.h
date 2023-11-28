@@ -16,6 +16,9 @@ typedef struct ressources_s {
     SDL_Texture *endLevel; /**< Texture indiquant la fin du niveau. */
     SDL_Texture *pavage; /**< Texture pour les plateformes. */
     SDL_Texture *piece; /**< Texture pour les pieces. */
+    SDL_Texture *menu; /**< Texture pour les menu. */
+    SDL_Texture *menubackground; /**< Texture pour les menu. */
+
     // Autres ressources ici
 } ressources_t;
 
@@ -34,12 +37,6 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources);
 */
 void clean_ressources(ressources_t *ressources);
 
-
-/**
- * \brief La fonction nettoie les resources
- * \param resources les resources
-*/
-void clean_ressources(ressources_t *ressources);
 
 /**
  * \brief La fonction initialise la SDL.
@@ -104,6 +101,9 @@ void SDL_RenderCopySprite(sprite_t* sprite, SDL_Renderer* renderer, SDL_Texture*
  * @brief copie tous les ennemis dans le rendererer
 */
 void SDL_RenderCopyEnnemis(liste ennemis, SDL_Renderer* renderer, SDL_Texture* ennemyTexture) ;
+
+void SDL_RenderCopyMenu(SDL_Renderer* renderer, SDL_Texture *menu, fixedSprite_t* tab_menu);
+
 
 /**
  * @param renderer le renderer

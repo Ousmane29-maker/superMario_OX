@@ -389,6 +389,47 @@ liste init_ennemis_level1(){
 
 }
 
+SDL_Rect* init_tab_src_labels(){
+    SDL_Rect* tab_src_labels = malloc(NOMBRE_LABELS*sizeof(SDL_Rect));
+    tab_src_labels[0].x = 25; 
+    tab_src_labels[0].y = 43; 
+    tab_src_labels[0].w = 143;
+    tab_src_labels[0].h = 42;
+    tab_src_labels[1].x = 25;
+    tab_src_labels[1].y = 119;
+    tab_src_labels[1].w = 143;
+    tab_src_labels[1].h = 42;
+
+    return tab_src_labels;
+
+}
+
+void init_tab_Src_Menu(fixedSprite_t* tab_menu){
+
+    SDL_Rect* tab_src_labels = init_tab_src_labels();
+    tab_menu[0].src_rect = tab_src_labels[0];
+    tab_menu[1].src_rect = tab_src_labels[1];
+    free(tab_src_labels);
+}
+
+void init_tab_Dest_Menu(fixedSprite_t* tab_menu, int line, int clone){
+
+    tab_menu[0].dest_rect.x = clone/2 - LABEL_WIDTH/2;
+    tab_menu[0].dest_rect.y = line/2 - 25;
+    tab_menu[0].dest_rect.w = 200;
+    tab_menu[0].dest_rect.h = 50;
+    tab_menu[1].dest_rect.x = clone/2 - LABEL_WIDTH/2;
+    tab_menu[1].dest_rect.y = line/2 + 50;
+    tab_menu[1].dest_rect.w = 200;
+    tab_menu[1].dest_rect.h = 50;
+
+}
+
+void init_tab_menu(fixedSprite_t* tab_menu, int line, int clone){
+    init_tab_Src_Menu(tab_menu);
+    init_tab_Dest_Menu(tab_menu, line, clone);
+}
+
 void init_world(world_t* world, const char* nomFichier){
     world->gameOver = 0 ;
     world->gravity = GRAVITY;
@@ -413,6 +454,13 @@ void init_world(world_t* world, const char* nomFichier){
     }
     init_tab_coins(world->tab_terrain, nbLig, nbCol, world->tab_coins) ;
     world->ennemis = init_ennemis_level1() ;
+    world->tab_menu = malloc(NOMBRE_LABELS*sizeof(fixedSprite_t));
+    if (world->tab_menu == NULL) {
+    fprintf(stderr, "Erreur : Ã‰chec de l'allocation mÃ©moire pour tab_menu\n");
+    exit(EXIT_FAILURE);  // Quitter le programme en cas d'erreur critique
+    }
+    init_tab_menu(world->tab_menu,nbLig * PLATFORM_SIZE,nbCol * PLATFORM_SIZE);
+    
 }
 
 int is_game_over(world_t *world){
@@ -726,3 +774,17 @@ void attack_player(sprite_t* player){
         }
     }
 }
+
+bool is_click_play(fixedSprite_t* tab_menu, int position_x, int position_y){
+
+    if(position_x >= tab_menu[0].dest_rect.x && position_x <= tab_menu[0].dest_rect.x + tab_menu[0].dest_rect.w &&
+        position_y <= tab_menu[0].dest_rect.y + tab_menu[0].dest_rect.h && position_y >= tab_menu[0].dest_rect.y){
+
+        return true;
+    }
+    else{
+
+        return false;
+    }
+
+}   
