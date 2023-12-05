@@ -391,14 +391,14 @@ liste init_ennemis_level1(){
 
 SDL_Rect* init_tab_src_labels(){
     SDL_Rect* tab_src_labels = malloc(NOMBRE_LABELS*sizeof(SDL_Rect));
-    tab_src_labels[0].x = 25; 
-    tab_src_labels[0].y = 43; 
-    tab_src_labels[0].w = 143;
-    tab_src_labels[0].h = 42;
-    tab_src_labels[1].x = 25;
-    tab_src_labels[1].y = 119;
-    tab_src_labels[1].w = 143;
-    tab_src_labels[1].h = 42;
+    tab_src_labels[0].x = 0; 
+    tab_src_labels[0].y = 2; 
+    tab_src_labels[0].w = LABEL_WIDTH;
+    tab_src_labels[0].h = LABEL_HEIGHT;
+    tab_src_labels[1].x = 0;
+    tab_src_labels[1].y = 190;
+    tab_src_labels[1].w = LABEL_WIDTH;
+    tab_src_labels[1].h = LABEL_HEIGHT;
 
     return tab_src_labels;
 
@@ -418,14 +418,14 @@ void init_tab_Src_Menu(fixedSprite_t* tab_menu){
 
 void init_tab_Dest_Menu(fixedSprite_t* tab_menu, int line, int clone){
 
-    tab_menu[0].dest_rect.x = clone/2 - LABEL_WIDTH/2;
+    tab_menu[0].dest_rect.x = clone/2 - 100;
     tab_menu[0].dest_rect.y = line/2 - 25;
-    tab_menu[0].dest_rect.w = 200;
-    tab_menu[0].dest_rect.h = 50;
-    tab_menu[1].dest_rect.x = clone/2 - LABEL_WIDTH/2;
+    tab_menu[0].dest_rect.w = LABEL_DEST_WIDTH;
+    tab_menu[0].dest_rect.h = LABEL_DEST_HEIGHT;
+    tab_menu[1].dest_rect.x = clone/2 - 100;
     tab_menu[1].dest_rect.y = line/2 + 50;
-    tab_menu[1].dest_rect.w = 200;
-    tab_menu[1].dest_rect.h = 50;
+    tab_menu[1].dest_rect.w = LABEL_DEST_WIDTH;
+    tab_menu[1].dest_rect.h = LABEL_DEST_HEIGHT;
 
 }
 

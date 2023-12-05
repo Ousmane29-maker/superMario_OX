@@ -100,11 +100,32 @@
 */
 #define ENDLEVEL_HEIGHT 64
 
-#define LABEL_HEIGHT 42
+/**
+ * la hauteur du button 
+*/
+#define LABEL_HEIGHT 131
 
-#define LABEL_WIDTH 143
+/**
+ * la largeur du button
+*/
+#define LABEL_WIDTH 438
 
+/**
+ * le nombre du button 
+*/
 #define NOMBRE_LABELS 2
+
+/**
+ * la largeur du button pour la destination
+*/
+#define LABEL_DEST_WIDTH 200
+
+/**
+ * la hauteur du button pour la destination
+*/
+#define LABEL_DEST_HEIGHT 50
+
+
 
 
 /**

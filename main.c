@@ -27,6 +27,7 @@ int main() {
     //le menu
     SDL_RenderCopyMenu(ecran, ressources.menu, world.tab_menu);
     SDL_RenderPresent(ecran);
+
                     
     //Boucle principale
     while (!is_game_over(&world)) {
@@ -50,7 +51,14 @@ int main() {
                         update_data(&world, nbLig*PLATFORM_SIZE, nbCol*PLATFORM_SIZE);
                         //refresh graphics
                         refresh_graphics(ecran, &world, &ressources) ;
-                    }
+
+                        // pause de 20 ms a chaque tour de boucle pour bien gerer l'affichage
+                        SDL_Delay(20);
+                        // Attendre environ 1000 milliseconde apres la fin du jeu
+                        if(is_game_over(&world)){
+                            SDL_Delay(1000) ;
+                        }
+                            }
                                                         
                 }
                 //check if the mouse clicked in the exit button
@@ -62,14 +70,7 @@ int main() {
                         
                 SDL_Log("mouse down(x:%d, y:%d)", events.button.x, events.button.y);
                 break;
-
-                        
-                // pause de 20 ms a chaque tour de boucle pour bien gerer l'affichage
-                SDL_Delay(20);
-                // Attendre environ 1000 milliseconde apres la fin du jeu
-                if(is_game_over(&world)){
-                    SDL_Delay(1000) ;
-                }
+       
         }
 
     }
