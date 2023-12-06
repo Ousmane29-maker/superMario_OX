@@ -25,11 +25,14 @@ int main() {
     init_ressources(ecran, &ressources) ;
     // Initialiser le monde
     init_world(&world, "ressources/terrain.txt");
-    //le menu
+    
     SDL_RenderClear(ecran); 
+    //le menu background
     SDL_RenderCopy(ecran, ressources.menubackground,NULL, NULL);
+    //le menu
     SDL_RenderCopyMenu(ecran, ressources.menu, world.tab_menu);
     SDL_RenderPresent(ecran);
+
                     
     //Boucle principale
     while (!is_game_over(&world)) {
@@ -39,15 +42,19 @@ int main() {
             case SDL_QUIT:
                 world.gameOver = 1;
                 break;
+            
             case SDL_MOUSEBUTTONDOWN:                    
                 x = events.button.x;
                 y = events.button.y;
+                //check if the mouse clicked on the play button
                 if(x >= world.tab_menu[0].dest_rect.x && x <= world.tab_menu[0].dest_rect.x + world.tab_menu[0].dest_rect.w &&
                     y <= world.tab_menu[0].dest_rect.y + world.tab_menu[0].dest_rect.h && y >= world.tab_menu[0].dest_rect.y){
                     while(!is_game_over(&world)){
+                        //gerer event
                         handle_events(&world, &events);
                         // Mise a jour des donnees
                         update_data(&world, nbLig*PLATFORM_SIZE, nbCol*PLATFORM_SIZE);
+                        //refresh graphics
                         refresh_graphics(ecran, &world, &ressources) ;
                         // pause de 20 ms a chaque tour de boucle pour bien gerer l'affichage
                         SDL_Delay(20);
@@ -60,6 +67,7 @@ int main() {
                                     
                                     
                 }
+                //check if the mouse clicked in the exit button
                 if(x >= world.tab_menu[1].dest_rect.x && x <= world.tab_menu[1].dest_rect.x + world.tab_menu[1].dest_rect.w &&
                     y <= world.tab_menu[1].dest_rect.y + world.tab_menu[1].dest_rect.h && y >= world.tab_menu[1].dest_rect.y){
                                     
@@ -68,7 +76,6 @@ int main() {
                         
                 SDL_Log("mouse down(x:%d, y:%d)", events.button.x, events.button.y);
                 break;
-
         }
 
     }

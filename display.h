@@ -102,6 +102,12 @@ void SDL_RenderCopySprite(sprite_t* sprite, SDL_Renderer* renderer, SDL_Texture*
 */
 void SDL_RenderCopyEnnemis(liste ennemis, SDL_Renderer* renderer, SDL_Texture* ennemyTexture) ;
 
+/**
+ * @param tab_menu le menu
+ * @param renderer le renderer
+ * @param menu la texture associee au  menu
+ * @brief copie le sprite dans le rendererer
+*/
 void SDL_RenderCopyMenu(SDL_Renderer* renderer, SDL_Texture *menu, fixedSprite_t* tab_menu);
 
 
