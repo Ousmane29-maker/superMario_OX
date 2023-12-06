@@ -127,7 +127,7 @@
 
 
 
-#define NOMBRE_ENNEMIES_LEVEL1 4
+#define NOMBRE_ENNEMIES_LEVEL1 5
 
 
 /**
@@ -500,6 +500,6 @@ void handle_hightScore(const char* nomFichier, sprite_t* player) ;
 
 bool sprite1_is_coliding_with_sprite2(sprite_t* sprite1, sprite_t* sprite2) ;
 
-bool sprite_is_coliding_with_ennemis(sprite_t* sprite, liste ennemis) ;
+bool isEnemyInitializationInvalid(sprite_t* sprite, liste ennemis) ;
 
 #endif

@@ -425,8 +425,9 @@ liste init_ennemis_level1(int screenWidth, int screenHeight, fixedSprite_t* tab_
         x = generateRandomNumber(0,screenWidth - SPRITE_WIDTH)  ; 
         y = 0 ; 
         init_sprite(&ennemy,x, y, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
-        while(!is_colliding_down_with_a_platform(&ennemy , tab_platesFormes, nbPlateForme) || sprite_is_coliding_with_ennemis(&ennemy, ennemis)){
-            if(y > screenHeight){ // si l'ennemy sort de la carte on reprend !
+        while(!is_colliding_down_with_a_platform(&ennemy , tab_platesFormes, nbPlateForme)){
+            
+            if(y > screenHeight || isEnemyInitializationInvalid(&ennemy, ennemis)){ // si l'ennemy sort de la carte on reprend !
                 x = generateRandomNumber(0,screenWidth - SPRITE_WIDTH)  ; 
                 y = 0 ;
             }
@@ -788,25 +789,26 @@ void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateF
             change_value_x(temp, current_sprite.dest_rect.x - 1);
         }
 
-        // Pas de collision en bas avec une plate-forme
-        if (!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 1) {
+        // Pas de collision en bas avec une plate-forme ou il ya une plateforme a droite ou l'ennemy sort de la carte a droite 
+        if ((!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme)|| is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth) && current_sprite.vers_la_droite == 1) {
             change_value_vers_la_droite(temp, 0);
             change_value_x(temp, current_sprite.dest_rect.x - 1);
         }
-        if (!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 0) {
+        // Pas de collision en bas avec une plate-forme ou il ya une plateforme a gauche ou l'ennemy sort de la carte a gauche 
+        if ((!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0) && current_sprite.vers_la_droite == 0) {
             change_value_vers_la_droite(temp, 1);
             change_value_x(temp, current_sprite.dest_rect.x + 1);
         }
-        // Colision a gauche
-        if (is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0){
-            change_value_vers_la_droite(temp, 1);
-            change_value_x(temp, current_sprite.dest_rect.x + 1);
-        }
+        // // Colision a gauche
+        // if (is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0){
+        //     change_value_vers_la_droite(temp, 1);
+        //     change_value_x(temp, current_sprite.dest_rect.x + 1);
+        // }
         // Colision a droite
-        if (is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth){
-            change_value_vers_la_droite(temp, 0);
-            change_value_x(temp, current_sprite.dest_rect.x - 1);
-        }
+        // if (is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth){
+        //     change_value_vers_la_droite(temp, 0);
+        //     change_value_x(temp, current_sprite.dest_rect.x - 1);
+        // }
         // Gestion du frame walk
         if (current_sprite.current_frame_walk == NOMBRE_FRAMES_WALK - 1) {
             change_value_current_frame_walk(temp, 0);
@@ -868,11 +870,11 @@ bool sprite1_is_coliding_with_sprite2(sprite_t* sprite1, sprite_t* sprite2){
     return false ;
 }
 
-bool sprite_is_coliding_with_ennemis(sprite_t* sprite, liste ennemis){
+bool isEnemyInitializationInvalid(sprite_t* sprite, liste ennemis){
     liste temp = ennemis ;
     while(!is_empty(temp)){
         sprite_t current_ennemy = value(temp);
-        if(sprite1_is_coliding_with_sprite2(sprite, &current_ennemy) || abs(current_ennemy.dest_rect.y - sprite->dest_rect.y) < 50){
+        if(sprite1_is_coliding_with_sprite2(sprite, &current_ennemy) || abs(current_ennemy.dest_rect.x - sprite->dest_rect.x) < 100){
             return true;
         }
         temp = next(temp);
