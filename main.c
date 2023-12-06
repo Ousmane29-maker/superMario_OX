@@ -14,6 +14,11 @@ int main() {
     world_t world ;
     int nbLig, nbCol;
     taille_fichier("ressources/terrain.txt", &nbLig, &nbCol);
+    if(nbLig < 10|| nbCol < 10){
+        printf("la taille du fichier est trop petite : 10/10 minimum") ;
+        exit(EXIT_FAILURE) ;
+
+    }
     // Initialiser la SDL et crÃ©er la fenÃªtre
     init_sdl(&fenetre, &ecran, nbCol*PLATFORM_SIZE, nbLig*PLATFORM_SIZE);
     //initialiser les ressources
@@ -44,6 +49,13 @@ int main() {
                         // Mise a jour des donnees
                         update_data(&world, nbLig*PLATFORM_SIZE, nbCol*PLATFORM_SIZE);
                         refresh_graphics(ecran, &world, &ressources) ;
+                        // pause de 20 ms a chaque tour de boucle pour bien gerer l'affichage
+                        SDL_Delay(20);
+                        // Attendre environ 1000 milliseconde apres la fin du jeu
+                        if(is_game_over(&world)){
+                            handle_hightScore("ressources/hightScore.txt", &world.player) ;
+                            SDL_Delay(1000) ;
+                        }
                     }
                                     
                                     
@@ -57,13 +69,6 @@ int main() {
                 SDL_Log("mouse down(x:%d, y:%d)", events.button.x, events.button.y);
                 break;
 
-                        
-                // pause de 20 ms a chaque tour de boucle pour bien gerer l'affichage
-                SDL_Delay(20);
-                // Attendre environ 1000 milliseconde apres la fin du jeu
-                if(is_game_over(&world)){
-                    SDL_Delay(1000) ;
-                }
         }
 
     }

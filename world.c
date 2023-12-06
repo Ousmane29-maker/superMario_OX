@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
+#include <time.h>
 #include "world.h"
 
 
@@ -163,6 +165,42 @@ void ecrire_fichier(const char* nomFichier, char** tab, int n, int m){
     }
 }
 
+void ecrire_fichier_heightScore(const char* nomFichier, int hightScore){
+    FILE* fichier = NULL;
+    fichier = fopen(nomFichier, "w");
+    if(fichier != NULL){
+        //le nombre de chiffre
+        int nbChiffre = 1 ;
+        int n = hightScore ;
+        while(n >= 10){
+            nbChiffre++ ;
+            n = n/10 ; 
+        }
+        // transformation en chaine de caracteree
+        char chaine[nbChiffre + 1];
+        sprintf(chaine, "%d", hightScore);
+        // ecriture de la chaine
+        fputs(chaine,fichier) ; 
+    }
+    fclose(fichier);
+}
+int lire_heightScore(const char* nomFichier){
+    FILE* fichier = NULL;
+    fichier = fopen(nomFichier, "r");
+    if(fichier != NULL){
+        // Recuperation de la chaine de caractere
+        char str[10];
+        fgets(str, sizeof(str), fichier) ;
+        fclose(fichier); //on ferme le fichier
+        //Conversion d'une chaine en entier
+        int heightScore = atoi(str);
+        return heightScore ;
+
+    }else{
+        fprintf(stderr, "Erreur de lecture du fichier.\n");
+        return -1 ;
+    }
+}
 
 int nbrPlateformes(char** tab_terrain, int n, int m){
     int compteur = 0;
@@ -374,19 +412,30 @@ void init_tab_coins(char ** tab_terrain, int n, int m, fixedSprite_t* tab_coins)
     }
 }
 
+int generateRandomNumber(int a, int b) {
+    return rand() % (b - a + 1) + a;
+}
 
-liste init_ennemis_level1(){
+liste init_ennemis_level1(int screenWidth, int screenHeight, fixedSprite_t* tab_platesFormes, int nbPlateForme){
     liste ennemis = cons_empty() ;
     sprite_t ennemy ;
-    //initialisation de 3 ennemis
-    init_sprite(&ennemy,870, 48, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
-    ennemis = cons(ennemy, ennemis) ;
-    init_sprite(&ennemy,400, 206, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
-    ennemis = cons(ennemy, ennemis) ;
-    init_sprite(&ennemy,600, 400, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
-    ennemis = cons(ennemy, ennemis) ;
+    int x, y;
+    srand(time(NULL));
+    for(int i = 0; i < NOMBRE_ENNEMIES_LEVEL1; i++){
+        x = generateRandomNumber(0,screenWidth - SPRITE_WIDTH)  ; 
+        y = 0 ; 
+        init_sprite(&ennemy,x, y, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
+        while(!is_colliding_down_with_a_platform(&ennemy , tab_platesFormes, nbPlateForme) || sprite_is_coliding_with_ennemis(&ennemy, ennemis)){
+            if(y > screenHeight){ // si l'ennemy sort de la carte on reprend !
+                x = generateRandomNumber(0,screenWidth - SPRITE_WIDTH)  ; 
+                y = 0 ;
+            }
+            y++ ;
+            init_sprite(&ennemy,x, y, SPRITE_WIDTH, SPRITE_HEIGHT, 0) ;
+        }
+        ennemis = cons(ennemy, ennemis) ;
+    }
     return ennemis ;
-
 }
 
 SDL_Rect* init_tab_src_labels(){
@@ -453,7 +502,7 @@ void init_world(world_t* world, const char* nomFichier){
     exit(EXIT_FAILURE);  // Quitter le programme en cas d'erreur critique
     }
     init_tab_coins(world->tab_terrain, nbLig, nbCol, world->tab_coins) ;
-    world->ennemis = init_ennemis_level1() ;
+    world->ennemis = init_ennemis_level1(nbCol * PLATFORM_SIZE, nbLig * PLATFORM_SIZE, world->tab_platesFormes, world->nbPlateForme) ;
     world->tab_menu = malloc(NOMBRE_LABELS*sizeof(fixedSprite_t));
     if (world->tab_menu == NULL) {
     fprintf(stderr, "Erreur : Ã‰chec de l'allocation mÃ©moire pour tab_menu\n");
@@ -582,7 +631,7 @@ void update_data(world_t* world, int screen_Height, int screen_Width){
     //attack du joueur
     attack_player(&world->player) ;
     // deplacement des ennemis
-    moving_ennemis(world->ennemis, world->tab_platesFormes, world->nbPlateForme )  ;
+    moving_ennemis(world->ennemis, world->tab_platesFormes, world->nbPlateForme, screen_Width)  ;
     //geston colision avec le drapeau
     if(is_colliding(&world->player , &world->endLevel)){
         world->gameOver = 1 ;
@@ -723,11 +772,10 @@ void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, in
     }
 }
 
-void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme) {
+void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme, int Screenwidth) {
     liste temp = ennemis;
     while (!is_empty(temp)) {
         sprite_t current_sprite = value(temp);
-
         // Collision en bas avec une plate-forme
         if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 1) {
             change_value_x(temp, current_sprite.dest_rect.x + 1);
@@ -745,7 +793,16 @@ void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateF
             change_value_vers_la_droite(temp, 1);
             change_value_x(temp, current_sprite.dest_rect.x + 1);
         }
-
+        // Colision a gauche
+        if (is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0){
+            change_value_vers_la_droite(temp, 1);
+            change_value_x(temp, current_sprite.dest_rect.x + 1);
+        }
+        // Colision a droite
+        if (is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth){
+            change_value_vers_la_droite(temp, 0);
+            change_value_x(temp, current_sprite.dest_rect.x - 1);
+        }
         // Gestion du frame walk
         if (current_sprite.current_frame_walk == NOMBRE_FRAMES_WALK - 1) {
             change_value_current_frame_walk(temp, 0);
@@ -788,3 +845,33 @@ bool is_click_play(fixedSprite_t* tab_menu, int position_x, int position_y){
     }
 
 }   
+
+void handle_hightScore(const char* nomFichier, sprite_t* player){
+    int heightScore = lire_heightScore(nomFichier);
+    if(player->nbPieceRamasse > heightScore) {
+        ecrire_fichier_heightScore(nomFichier, player->nbPieceRamasse) ;
+    }
+}
+
+bool sprite1_is_coliding_with_sprite2(sprite_t* sprite1, sprite_t* sprite2){
+      if (sprite1->dest_rect.x <= sprite2->dest_rect.x + sprite2->dest_rect.w &&
+        sprite1->dest_rect.x + sprite1->dest_rect.w >= sprite2->dest_rect.x &&
+        sprite1->dest_rect.y <= sprite2->dest_rect.y + sprite2->dest_rect.h &&
+        sprite1->dest_rect.y + sprite1->dest_rect.h >= sprite2->dest_rect.y) 
+    {
+        return true ;
+    }
+    return false ;
+}
+
+bool sprite_is_coliding_with_ennemis(sprite_t* sprite, liste ennemis){
+    liste temp = ennemis ;
+    while(!is_empty(temp)){
+        sprite_t current_ennemy = value(temp);
+        if(sprite1_is_coliding_with_sprite2(sprite, &current_ennemy) || abs(current_ennemy.dest_rect.y - sprite->dest_rect.y) < 50){
+            return true;
+        }
+        temp = next(temp);
+    }
+    return false ;
+}

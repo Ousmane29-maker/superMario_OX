@@ -106,6 +106,8 @@
 
 #define NOMBRE_LABELS 4
 
+#define NOMBRE_ENNEMIES_LEVEL1 4
+
 
 /**
  * @brief Structure reprÃ©sentant une plateforme statique pour l'affichage graphique.
@@ -177,6 +179,9 @@ void taille_fichier(const char* nomFichier, int* nbLig, int* nbCol);
 */
 char** lire_fichier(const char* nomFichier);
 
+void ecrire_fichier_heightScore(const char* nomFichier, int hightScore) ;
+
+int lire_heightScore(const char* nomFichier) ;
 
 /**
 * @param char** tab
@@ -261,11 +266,25 @@ void init_tab_platesFormes(fixedSprite_t* tab_plateFormes, char ** tab_terrain, 
 */
 void init_sprite(sprite_t *sprite, double x, double y, int w, int h,int weapon) ;
 
+/**
+ * @brief Génère un nombre aléatoire dans la plage spécifiée.
+ * Cette fonction utilise la fonction rand() pour générer un nombre
+ * pseudo-aléatoire entre les valeurs a et b incluses.
+ * @param a La borne inférieure de la plage.
+ * @param b La borne supérieure de la plage.
+ * @return Le nombre aléatoire généré dans la plage [a, b].
+ */
+int generateRandomNumber(int a, int b) ;
+
 
 /**
+ * \param screenWidth la largeur de l'ecran
+ * \param screenHeight la hauteur de l'ecran
+ * \param tab_platesFormes le tableau de plateformes
+ * \param nbPlateForme le nombre de plateformes
  * \brief initialise les ennemis du niveau1
 */
-liste init_ennemis_level1() ;
+liste init_ennemis_level1(int screenWidth, int screenHeight, fixedSprite_t* tab_platesFormes, int nbPlateForme);
 /**
 * \param endLevel  pointeur vers fixedSprite_t
 * \param x l'abscisse initial du joueur 
@@ -415,8 +434,9 @@ void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, in
 * \param ennemis liste des ennemis  
 * \param tab_platesFormes le tableau de plateformes
 * \param nbPlateForme le nombre de plateforme
+* \param Screenwidth la largeur de l'ecran
 */
-void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme) ;
+void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme, int Screenwidth) ;
 
 /**
  * \brief la fonction qui permet au joueur d'attaquer les ennemis
@@ -433,5 +453,11 @@ void init_tab_menu(fixedSprite_t* tab_menu, int line, int clone);
 bool is_click_play(fixedSprite_t* tab_menu, int position_x, int position_y);
 
 SDL_Rect* init_tab_src_labels();
+
+void handle_hightScore(const char* nomFichier, sprite_t* player) ;
+
+bool sprite1_is_coliding_with_sprite2(sprite_t* sprite1, sprite_t* sprite2) ;
+
+bool sprite_is_coliding_with_ennemis(sprite_t* sprite, liste ennemis) ;
 
 #endif
