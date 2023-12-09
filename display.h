@@ -110,6 +110,25 @@ void SDL_RenderCopyEnnemis(liste ennemis, SDL_Renderer* renderer, SDL_Texture* e
 */
 void SDL_RenderCopyMenu(SDL_Renderer* renderer, SDL_Texture *menu, fixedSprite_t* tab_menu);
 
+/**
+ * @param renderer le renderer
+ * @param x l'abscisse de la barre du sprite
+ * @param y l'ordonne de la barre du sprite
+ * @param w la largeur de la barre du sprite
+ * @param h la hauteur du de la barre du sprite
+ * @param life HP du sprite 
+ * @param max_life HP_initial du sprite
+ * @param color couleur de la barre
+ * @brief dessine la barre de vie du sprite dans le rendererer
+*/
+void display_life_bar(SDL_Renderer *renderer, int x, int y, int w, int h, int life, int max_life, SDL_Color color);
+
+/**
+ * @param renderer le renderer
+ * @param ennemis la liste des ennemis
+ * @brief dessine la barre de vie des ennemis dans le rendererer
+*/
+void display_life_bar_ennemy(SDL_Renderer *renderer, liste ennemis) ;
 
 /**
  * @param renderer le renderer

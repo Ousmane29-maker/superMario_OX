@@ -77,6 +77,15 @@ void change_value_current_frame_walk(liste l, int new_current_frame_walk){
     }
 }
 
+void change_HP(liste l, int new_HP){
+    if (is_empty(l)) {
+        fprintf(stderr, "Erreur: Tentative de modifier (change_HP) d'une liste vide.\n");
+        exit(EXIT_FAILURE);
+    }else{
+    l->data.HP = new_HP ;
+    }
+}
+
 void liberer_liste(liste l) {
     while (! is_empty(l)) {
         // Stocker le nœud actuel

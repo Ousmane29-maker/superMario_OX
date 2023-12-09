@@ -456,14 +456,14 @@ void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, in
 * \param tab_platesFormes le tableau de plateformes
 * \param nbPlateForme le nombre de plateforme
 * \param Screenwidth la largeur de l'ecran
+* \param player le joueur
 */
-void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme, int Screenwidth) ;
-
+void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme, int Screenwidth, sprite_t * player) ;
 /**
  * \brief la fonction qui permet au joueur d'attaquer les ennemis
- * \param player le joueur
+ * \param sprite le sprite
 */
-void attack_player(sprite_t* player) ;
+void attack_player(sprite_t* sprite) ;
 
 /**
  * \brief la fonction qui permet au joueur d'attaquer les ennemis
@@ -496,10 +496,36 @@ bool is_click_play(fixedSprite_t* tab_menu, int position_x, int position_y);
 
 SDL_Rect* init_tab_src_labels();
 
+/**
+ * \brief la fonction qui gere les meuilleures scores
+ * \param nomFichier le nom du fichier 
+ * \param player le joueur
+*/
 void handle_hightScore(const char* nomFichier, sprite_t* player) ;
 
+/**
+ * \brief la fonction retourne vrai si les 2 sprites ne sont pas en collision
+ * \param sprite1 le sprite1 
+ * \param sprite2 le sprite2
+*/
 bool sprite1_is_coliding_with_sprite2(sprite_t* sprite1, sprite_t* sprite2) ;
 
-bool isEnemyInitializationInvalid(sprite_t* sprite, liste ennemis) ;
+/**
+ * \brief la fonction retourne vrai si l'initialisation de Ennemy est invalide
+ * \param Ennemy l'ennemy a initialiser 
+ * \param ennemis liste de monstre
+*/
+bool isEnemyInitializationInvalid(sprite_t* Ennemy, liste ennemis) ;
+
+bool player_is_colliding_left_with_ennemis(sprite_t* player, liste ennemis) ;
+
+bool player_is_colliding_right_with_ennemis(sprite_t* player, liste ennemis) ;
+
+/**
+ * \brief la fonction gere les attaques du joueur
+ * \param player le joueur
+ * \param ennemis liste de monstre
+*/
+void handle_attack_player(sprite_t* player, liste ennemis) ;
 
 #endif

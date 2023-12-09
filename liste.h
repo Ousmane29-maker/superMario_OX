@@ -29,6 +29,7 @@ typedef struct sprite_s {
     int is_attacking ; /**< Champ indiquant si le sprite est entrain d'attaquer ou pas */
     int HP ; /**< Champ indiquant le point de vie d'un sprite */
     int nbPieceRamasse ; /**< Champ correspondant au nombre de piece ramassÃ©. */
+    Uint32 lastAttackTime; /** Chanp indiquant quand la derniere attaque a eu lieu*/
 } sprite_t;
 
 
@@ -104,6 +105,13 @@ void change_value_vers_la_droite(liste l, int new_direction) ;
  * @param new_current_frame_walk la nouvelle current_frame_walk pour le sprite en tete de la liste
  */
 void change_value_current_frame_walk(liste l, int new_current_frame_walk) ;
+
+/**
+ * @brief remplace l'ancien valeur de HP du sprite par la nouvelle .
+ * @param l La liste .
+ * @param new_HP la nouvelle HP pour le sprite en tete de la liste
+ */
+void change_HP(liste l, int new_HP) ;
 
 /**
  * @brief Libère la mémoire associée à tous les nœuds de la liste.

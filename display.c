@@ -173,6 +173,38 @@ void SDL_RenderCopyMenu(SDL_Renderer* renderer, SDL_Texture *menu, fixedSprite_t
 
 }
 
+
+void display_life_bar(SDL_Renderer *renderer, int x, int y, int w, int h, int life, int max_life, SDL_Color color){
+    if(life < 0){
+        life = 0 ;
+    }
+    // Calcul du ratio de vie
+    float life_ratio = (float)life / max_life;
+
+    // Calcul de la taille de la barre de vie
+    int life_bar_w = (int)(w * life_ratio);
+
+    // Dessin du fond de la barre de vie au dessus du sprite (-5) et de hauteur 7
+    SDL_Rect bg_rect = {x, y, w, h};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &bg_rect);
+
+    // Dessin de la barre de vie
+    SDL_Rect life_bar_rect = {x, y, life_bar_w, h};
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    SDL_RenderFillRect(renderer, &life_bar_rect);
+}
+
+void display_life_bar_ennemy(SDL_Renderer *renderer, liste ennemis){
+    liste temp = ennemis ;
+    SDL_Color color = {255, 0, 0, 255};
+    while(! is_empty(temp)){
+        sprite_t current_ennemy = value(temp) ;
+        display_life_bar(renderer, current_ennemy.dest_rect.x, current_ennemy.dest_rect.y - 5, SPRITE_WIDTH, 7, current_ennemy.HP, HP_INITIAL, color) ;
+        temp = next(temp) ;
+    }
+}
+
 void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources){
     SDL_RenderClear(renderer);   
     // le fond
@@ -187,6 +219,11 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     SDL_RenderCopySprite(&world->player, renderer, ressources->playerTexture) ;
     // Copier les ennemis dans le renderer
     SDL_RenderCopyEnnemis(world->ennemis,renderer, ressources->ennemyTexture) ;
+    //life_bar des ennemy
+    display_life_bar_ennemy(renderer, world->ennemis) ;
+    // life_bar player
+    SDL_Color color = {0, 0, 255, 255};
+    display_life_bar(renderer, 5, 5, 2*PLATFORM_SIZE, PLATFORM_SIZE, world->player.HP, HP_INITIAL, color) ;
     // Afficher tout dans la fenÃªtre
     SDL_RenderPresent(renderer);
 }

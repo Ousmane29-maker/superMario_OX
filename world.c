@@ -321,6 +321,7 @@ void init_sprite(sprite_t *sprite, double x, double y, int w, int h,int weapon) 
     sprite->current_frame_attack_with_weapeon = 0 ;
     sprite->is_attacking = 0 ;
     sprite->HP = HP_INITIAL ;
+    sprite->lastAttackTime = SDL_GetTicks();
 
     sprite->walk_rects = malloc(NOMBRE_FRAMES_WALK * sizeof(SDL_Rect)) ;
     int x_src , y_src ;
@@ -537,26 +538,26 @@ void handle_events(world_t *world, SDL_Event *event) {
                         }    
                         break;
                     case SDLK_LEFT:
-                        if(!is_colliding_left_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
+                        if(!is_colliding_left_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) && !player_is_colliding_left_with_ennemis(&world->player, world->ennemis)){
                             world->player.dest_rect.x -= MOVE_STEP;
                             if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
                                 world->player.current_frame_walk = 0 ;
                             }else{
                                 world->player.current_frame_walk ++ ;
                             }
-                            world->player.vers_la_droite = 0 ;
                         }    
+                        world->player.vers_la_droite = 0 ;
                         break;
                     case SDLK_RIGHT:
-                        if(!is_colliding_right_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) ){
+                        if(!is_colliding_right_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme) && !player_is_colliding_right_with_ennemis(&world->player, world->ennemis)){
                             world->player.dest_rect.x += MOVE_STEP;
                             if(world->player.current_frame_walk == NOMBRE_FRAMES_WALK - 1){
                                 world->player.current_frame_walk = 0 ;
                             }else{
                                 world->player.current_frame_walk ++ ;
                             }
-                            world->player.vers_la_droite = 1 ;
                         }
+                        world->player.vers_la_droite = 1 ;
                         break;
 
                     case SDLK_w :
@@ -633,10 +634,12 @@ void update_data(world_t* world, int screen_Height, int screen_Width){
     }
     //gestion de collision avec les bonus
     handle_colliding_with_piece(&world->player, world->tab_coins, world->nbPiece) ;
+    // deplacement des ennemis
+    moving_ennemis(world->ennemis, world->tab_platesFormes, world->nbPlateForme, screen_Width, &world->player)  ;
+    // gestion des attaques du joueur
+    handle_attack_player(&world->player, world->ennemis) ;
     //attack du joueur
     attack_player(&world->player) ;
-    // deplacement des ennemis
-    moving_ennemis(world->ennemis, world->tab_platesFormes, world->nbPlateForme, screen_Width)  ;
     //geston colision avec le drapeau
     if(is_colliding(&world->player , &world->endLevel)){
         world->gameOver = 1 ;
@@ -777,27 +780,35 @@ void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, in
     }
 }
 
-void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme, int Screenwidth) {
+void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme, int Screenwidth, sprite_t * player) {
     liste temp = ennemis;
     while (!is_empty(temp)) {
         sprite_t current_sprite = value(temp);
         // Collision en bas avec une plate-forme
         if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 1) {
-            change_value_x(temp, current_sprite.dest_rect.x + 1);
+            if(! (sprite1_is_coliding_with_sprite2(player, &current_sprite) && player->dest_rect.x > current_sprite.dest_rect.x)){
+                change_value_x(temp, current_sprite.dest_rect.x + 1);
+                change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
+            }
         }
         if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 0) {
-            change_value_x(temp, current_sprite.dest_rect.x - 1);
+            if(! (sprite1_is_coliding_with_sprite2(player, &current_sprite) && player->dest_rect.x < current_sprite.dest_rect.x)){
+                change_value_x(temp, current_sprite.dest_rect.x - 1);
+                change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
+            }
         }
 
         // Pas de collision en bas avec une plate-forme ou il ya une plateforme a droite ou l'ennemy sort de la carte a droite 
         if ((!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme)|| is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth) && current_sprite.vers_la_droite == 1) {
             change_value_vers_la_droite(temp, 0);
             change_value_x(temp, current_sprite.dest_rect.x - 1);
+            change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
         }
         // Pas de collision en bas avec une plate-forme ou il ya une plateforme a gauche ou l'ennemy sort de la carte a gauche 
         if ((!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0) && current_sprite.vers_la_droite == 0) {
             change_value_vers_la_droite(temp, 1);
             change_value_x(temp, current_sprite.dest_rect.x + 1);
+            change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
         }
         // // Colision a gauche
         // if (is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0){
@@ -810,29 +821,27 @@ void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateF
         //     change_value_x(temp, current_sprite.dest_rect.x - 1);
         // }
         // Gestion du frame walk
-        if (current_sprite.current_frame_walk == NOMBRE_FRAMES_WALK - 1) {
+        if (current_sprite.current_frame_walk >= NOMBRE_FRAMES_WALK - 1) {
             change_value_current_frame_walk(temp, 0);
-        } else {
-            change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
         }
-
         temp = next(temp);
     }
 }
 
-void attack_player(sprite_t* player){
-    if(player->is_attacking == 1){ // is_attacking
-        if(player->weapeon == 0){ //sans arme
-            player->current_frame_attack ++ ;
-            if(player->current_frame_attack == NOMBRE_FRAMES_ATTACK - 1){ // fin attack
-                player->is_attacking = 0 ; // initial
-                player->current_frame_attack = 0 ; // initial
+
+void attack_player(sprite_t* sprite){
+    if(sprite->is_attacking == 1){ // is_attacking
+        if(sprite->weapeon == 0){ //sans arme
+            sprite->current_frame_attack ++ ;
+            if(sprite->current_frame_attack == NOMBRE_FRAMES_ATTACK - 1){ // fin attack
+                sprite->is_attacking = 0 ; // initial
+                sprite->current_frame_attack = 0 ; // initial
             }
         }else{ // avec arme
-            player->current_frame_attack_with_weapeon ++ ;
-            if(player->current_frame_attack_with_weapeon == NOMBRE_FRAMES_ATTACK_WITH_WEAPEON - 1){ // fin attack
-                player->is_attacking = 0 ; // initial
-                player->current_frame_attack_with_weapeon = 0 ; // initial
+            sprite->current_frame_attack_with_weapeon ++ ;
+            if(sprite->current_frame_attack_with_weapeon == NOMBRE_FRAMES_ATTACK_WITH_WEAPEON - 1){ // fin attack
+                sprite->is_attacking = 0 ; // initial
+                sprite->current_frame_attack_with_weapeon = 0 ; // initial
             }
         }
     }
@@ -860,24 +869,73 @@ void handle_hightScore(const char* nomFichier, sprite_t* player){
 }
 
 bool sprite1_is_coliding_with_sprite2(sprite_t* sprite1, sprite_t* sprite2){
-      if (sprite1->dest_rect.x <= sprite2->dest_rect.x + sprite2->dest_rect.w &&
-        sprite1->dest_rect.x + sprite1->dest_rect.w >= sprite2->dest_rect.x &&
-        sprite1->dest_rect.y <= sprite2->dest_rect.y + sprite2->dest_rect.h &&
-        sprite1->dest_rect.y + sprite1->dest_rect.h >= sprite2->dest_rect.y) 
+      if (sprite1->dest_rect.x <sprite2->dest_rect.x + sprite2->dest_rect.w &&
+        sprite1->dest_rect.x + sprite1->dest_rect.w > sprite2->dest_rect.x &&
+        sprite1->dest_rect.y < sprite2->dest_rect.y + sprite2->dest_rect.h &&
+        sprite1->dest_rect.y + sprite1->dest_rect.h > sprite2->dest_rect.y) 
     {
         return true ;
     }
     return false ;
 }
 
-bool isEnemyInitializationInvalid(sprite_t* sprite, liste ennemis){
+bool isEnemyInitializationInvalid(sprite_t* Ennemy, liste ennemis){
     liste temp = ennemis ;
     while(!is_empty(temp)){
         sprite_t current_ennemy = value(temp);
-        if(sprite1_is_coliding_with_sprite2(sprite, &current_ennemy) || abs(current_ennemy.dest_rect.x - sprite->dest_rect.x) < 100){
+        if(sprite1_is_coliding_with_sprite2(Ennemy, &current_ennemy) || (abs(current_ennemy.dest_rect.x - Ennemy->dest_rect.x) < 100 && abs(current_ennemy.dest_rect.y - Ennemy->dest_rect.y) < 100)){
             return true;
         }
         temp = next(temp);
     }
     return false ;
+}
+
+bool player_is_colliding_left_with_ennemis(sprite_t* player, liste ennemis){
+    liste temp = ennemis ;
+    while(!is_empty(temp)){
+        sprite_t current_ennemy = value(temp);
+        if(sprite1_is_coliding_with_sprite2(player, &current_ennemy) && player->dest_rect.x > current_ennemy.dest_rect.x){
+            return true;
+        }
+        temp = next(temp);
+    }
+    return false ;
+}
+
+bool player_is_colliding_right_with_ennemis(sprite_t* player, liste ennemis){
+    liste temp = ennemis ;
+    while(!is_empty(temp)){
+        sprite_t current_ennemy = value(temp);
+        if(sprite1_is_coliding_with_sprite2(player, &current_ennemy) && player->dest_rect.x < current_ennemy.dest_rect.x){
+            return true;
+        }
+        temp = next(temp);
+    }
+    return false ;
+}
+
+void handle_attack_player(sprite_t* player, liste ennemis){
+    srand(time(NULL));
+    liste temp = ennemis ;
+    while(! is_empty(temp)){
+        sprite_t current_ennemy = value(temp);
+        if(sprite1_is_coliding_with_sprite2(player, &current_ennemy)){
+            if(player->is_attacking == 1 && ((player->dest_rect.x < current_ennemy.dest_rect.x && player->vers_la_droite == 1 ) || (player->dest_rect.x > current_ennemy.dest_rect.x && player->vers_la_droite == 0))){
+                int new_HP ;
+                if(player->current_frame_attack == 1){ // attack sans arme
+                    new_HP = current_ennemy.HP - generateRandomNumber(5,20) ;
+                    change_HP(temp,new_HP) ;
+                }
+                if(player->current_frame_attack_with_weapeon == 1){ // attack avec arme
+                    new_HP = current_ennemy.HP - generateRandomNumber(10,40) ;
+                    change_HP(temp,new_HP) ;
+                }
+            
+                printf("HP : %d \n", current_ennemy.HP) ;
+            
+            }
+        }
+        temp = next(temp);
+    }
 }
