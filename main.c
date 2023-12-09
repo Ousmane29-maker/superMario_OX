@@ -91,6 +91,7 @@ int main() {
     free(world.player.jump_rects) ;
     free(world.player.attack_rects) ;
     free(world.player.attack_with_weapeon_rects) ;
+    free(world.player.death_rects) ;
     free(world.tab_menu);
     liberer_liste(world.ennemis) ; 
     // Quitter SDL

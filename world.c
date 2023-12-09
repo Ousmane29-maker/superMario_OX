@@ -319,6 +319,7 @@ void init_sprite(sprite_t *sprite, double x, double y, int w, int h,int weapon) 
     sprite->nbPieceRamasse = 0 ;
     sprite->current_frame_attack = 0 ;
     sprite->current_frame_attack_with_weapeon = 0 ;
+    sprite->current_frame_death = 0 ;
     sprite->is_attacking = 0 ;
     sprite->HP = HP_INITIAL ;
     sprite->lastAttackTime = SDL_GetTicks();
@@ -376,6 +377,17 @@ void init_sprite(sprite_t *sprite, double x, double y, int w, int h,int weapon) 
         sprite->attack_with_weapeon_rects [i].w = IMAGE_ARMED_SPRITE_WIDTH ;
         sprite->attack_with_weapeon_rects [i].h = IMAGE_SPRITE_HEIGHT;
         x_src = x_src + 129 ;
+    }
+
+    sprite->death_rects = malloc(NOMBRE_FRAMES_DEATH * sizeof(SDL_Rect)) ;
+    x_src = 20 ;
+    y_src = 1290 ; // 
+    for(int i = 0 ; i < NOMBRE_FRAMES_DEATH; i++){
+        sprite->death_rects [i].x = x_src ;
+        sprite->death_rects [i].y = y_src ;
+        sprite->death_rects [i].w = IMAGE_SPRITE_WIDTH ;
+        sprite->death_rects [i].h = IMAGE_SPRITE_HEIGHT;
+        x_src = x_src + 64 ;
     }
 
     //destination
@@ -784,45 +796,49 @@ void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateF
     liste temp = ennemis;
     while (!is_empty(temp)) {
         sprite_t current_sprite = value(temp);
-        // Collision en bas avec une plate-forme
-        if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 1) {
-            if(! (sprite1_is_coliding_with_sprite2(player, &current_sprite) && player->dest_rect.x > current_sprite.dest_rect.x)){
-                change_value_x(temp, current_sprite.dest_rect.x + 1);
-                change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
+        if(current_sprite.HP > 0){
+            // Collision en bas avec une plate-forme
+            if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 1) {
+                if(! (sprite1_is_coliding_with_sprite2(player, &current_sprite) && player->dest_rect.x > current_sprite.dest_rect.x)){
+                    change_value_x(temp, current_sprite.dest_rect.x + 1);
+                    change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
+                }
             }
-        }
-        if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 0) {
-            if(! (sprite1_is_coliding_with_sprite2(player, &current_sprite) && player->dest_rect.x < current_sprite.dest_rect.x)){
+            if (is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) && current_sprite.vers_la_droite == 0) {
+                if(! (sprite1_is_coliding_with_sprite2(player, &current_sprite) && player->dest_rect.x < current_sprite.dest_rect.x)){
+                    change_value_x(temp, current_sprite.dest_rect.x - 1);
+                    change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
+                }
+            }
+
+            // Pas de collision en bas avec une plate-forme ou il ya une plateforme a droite ou l'ennemy sort de la carte a droite 
+            if ((!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme)|| is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth) && current_sprite.vers_la_droite == 1) {
+                change_value_vers_la_droite(temp, 0);
                 change_value_x(temp, current_sprite.dest_rect.x - 1);
                 change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
             }
-        }
-
-        // Pas de collision en bas avec une plate-forme ou il ya une plateforme a droite ou l'ennemy sort de la carte a droite 
-        if ((!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme)|| is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth) && current_sprite.vers_la_droite == 1) {
-            change_value_vers_la_droite(temp, 0);
-            change_value_x(temp, current_sprite.dest_rect.x - 1);
-            change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
-        }
-        // Pas de collision en bas avec une plate-forme ou il ya une plateforme a gauche ou l'ennemy sort de la carte a gauche 
-        if ((!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0) && current_sprite.vers_la_droite == 0) {
-            change_value_vers_la_droite(temp, 1);
-            change_value_x(temp, current_sprite.dest_rect.x + 1);
-            change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
-        }
-        // // Colision a gauche
-        // if (is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0){
-        //     change_value_vers_la_droite(temp, 1);
-        //     change_value_x(temp, current_sprite.dest_rect.x + 1);
-        // }
-        // Colision a droite
-        // if (is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth){
-        //     change_value_vers_la_droite(temp, 0);
-        //     change_value_x(temp, current_sprite.dest_rect.x - 1);
-        // }
-        // Gestion du frame walk
-        if (current_sprite.current_frame_walk >= NOMBRE_FRAMES_WALK - 1) {
-            change_value_current_frame_walk(temp, 0);
+            // Pas de collision en bas avec une plate-forme ou il ya une plateforme a gauche ou l'ennemy sort de la carte a gauche 
+            if ((!is_colliding_down_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0) && current_sprite.vers_la_droite == 0) {
+                change_value_vers_la_droite(temp, 1);
+                change_value_x(temp, current_sprite.dest_rect.x + 1);
+                change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
+            }
+            // // Colision a gauche
+            // if (is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0){
+            //     change_value_vers_la_droite(temp, 1);
+            //     change_value_x(temp, current_sprite.dest_rect.x + 1);
+            // }
+            // Colision a droite
+            // if (is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth){
+            //     change_value_vers_la_droite(temp, 0);
+            //     change_value_x(temp, current_sprite.dest_rect.x - 1);
+            // }
+            // Gestion du frame walk
+            if (current_sprite.current_frame_walk >= NOMBRE_FRAMES_WALK - 1) {
+                change_value_current_frame_walk(temp, 0);
+            }
+        }else{
+            
         }
         temp = next(temp);
     }
@@ -939,3 +955,14 @@ void handle_attack_player(sprite_t* player, liste ennemis){
         temp = next(temp);
     }
 }
+
+// void handle_death_sprite(sprite_t *sprite){
+//     if(sprite->HP <= 0){
+//         if(sprite->current_frame_death < NOMBRE_FRAMES_DEATH){
+//             sprite->current_frame_death ++ ;
+//         }else{
+//             //
+//         }
+        
+//     }
+// }

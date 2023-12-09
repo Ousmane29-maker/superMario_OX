@@ -80,6 +80,12 @@
 
 
 /**
+ * Nombre de frames (images) death dans l'animation du joueur. 
+*/
+#define NOMBRE_FRAMES_DEATH 6
+
+
+/**
  * le point de vie initial d'un sprite. 
 */
 #define HP_INITIAL 100

@@ -77,6 +77,15 @@ void change_value_current_frame_walk(liste l, int new_current_frame_walk){
     }
 }
 
+void change_value_current_frame_death(liste l, int new_current_frame_death){
+    if (is_empty(l)) {
+        fprintf(stderr, "Erreur: Tentative de modifier (change_value_current_frame_death) d'une liste vide.\n");
+        exit(EXIT_FAILURE);
+    }else{
+    l->data.current_frame_death = new_current_frame_death ;
+    }
+}
+
 void change_HP(liste l, int new_HP){
     if (is_empty(l)) {
         fprintf(stderr, "Erreur: Tentative de modifier (change_HP) d'une liste vide.\n");
@@ -96,6 +105,7 @@ void liberer_liste(liste l) {
         free(temp->data.jump_rects) ;
         free(temp->data.attack_rects) ;
         free(temp->data.attack_with_weapeon_rects) ;
+        free(temp->data.death_rects) ;
         // Déplacer le pointeur vers le prochain nœud
         l = l->next;      
         // Libérer le nœud actuel    

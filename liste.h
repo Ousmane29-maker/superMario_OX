@@ -19,6 +19,7 @@ typedef struct sprite_s {
     SDL_Rect* jump_rects ; /**< Tableau de rectangles source representant les diffÃ©rentes images du sprite en sautant. */
     SDL_Rect* attack_rects ; /**< Tableau de rectangles source representant les differentes images du sprite en attaquant*/
     SDL_Rect* attack_with_weapeon_rects ; /**< Tableau de rectangles source representant les differentes images du sprite en attaquant avec l'arme*/
+    SDL_Rect* death_rects ; /**< Tableau de rectangles source representant les differentes images du sprite apres que son HP <= 0 */
     SDL_Rect dest_rect; /**< Rectangle de destination reprÃ©sentant la position et les dimensions sur l'Ã©cran. */
     int weapeon ; /**< champ indiquant si le personnage est armee ou pas */
     int current_frame_walk; /**< Frame walk actuelle affiché. */
@@ -26,6 +27,7 @@ typedef struct sprite_s {
     int current_frame_jump ; /**< Champ indiquant le moment du saut */
     int current_frame_attack ; /**<  Frame attack actuelle affiché. */
     int current_frame_attack_with_weapeon ; /**<  Frame attack avec une arme actuelle affiché. */
+    int current_frame_death ; /**<  Frame death actuelle affiché. */
     int is_attacking ; /**< Champ indiquant si le sprite est entrain d'attaquer ou pas */
     int HP ; /**< Champ indiquant le point de vie d'un sprite */
     int nbPieceRamasse ; /**< Champ correspondant au nombre de piece ramassÃ©. */
@@ -105,6 +107,13 @@ void change_value_vers_la_droite(liste l, int new_direction) ;
  * @param new_current_frame_walk la nouvelle current_frame_walk pour le sprite en tete de la liste
  */
 void change_value_current_frame_walk(liste l, int new_current_frame_walk) ;
+
+/**
+ * @brief remplace l'ancien valeur de current_frame_death du sprite par la nouvelle .
+ * @param l La liste .
+ * @param new_current_frame_death la nouvelle current_frame_death pour le sprite en tete de la liste
+ */
+void change_value_current_frame_death(liste l, int new_current_frame_death) ;
 
 /**
  * @brief remplace l'ancien valeur de HP du sprite par la nouvelle .

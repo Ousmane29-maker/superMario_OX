@@ -117,43 +117,53 @@ void SDL_RenderCopyPieces(fixedSprite_t* tab_coins, SDL_Renderer* renderer, SDL_
 }
 
 void SDL_RenderCopySprite(sprite_t* sprite, SDL_Renderer* renderer, SDL_Texture* spriteTexture){
-    if(is_jumping(sprite)){
-        if(sprite->vers_la_droite == 1){
-            SDL_RenderCopy(renderer, spriteTexture, &sprite->jump_rects[sprite->current_frame_jump], &sprite->dest_rect);
-        }else{
-            SDL_RenderCopyEx(renderer, spriteTexture, &sprite->jump_rects[sprite->current_frame_jump],& sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-        } 
-    }else{ // ! is_jumping
-        if(sprite->weapeon == 0){ // le sprite est sans arme
-            if(sprite->vers_la_droite == 1){ // sans arme + vers la droite
-                if(sprite->is_attacking == 1){ //is_attacking
-                    SDL_RenderCopy(renderer, spriteTexture, &sprite->attack_rects[sprite->current_frame_attack], &sprite->dest_rect);
-                }else{ // !is_attacking
-                    SDL_RenderCopy(renderer, spriteTexture, &sprite->walk_rects[sprite->current_frame_walk], &sprite->dest_rect);
+    if(sprite->HP > 0){
+        if(is_jumping(sprite)){
+            if(sprite->vers_la_droite == 1){
+                SDL_RenderCopy(renderer, spriteTexture, &sprite->jump_rects[sprite->current_frame_jump], &sprite->dest_rect);
+            }else{
+                SDL_RenderCopyEx(renderer, spriteTexture, &sprite->jump_rects[sprite->current_frame_jump],& sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+            } 
+        }else{ // ! is_jumping
+            if(sprite->weapeon == 0){ // le sprite est sans arme
+                if(sprite->vers_la_droite == 1){ // sans arme + vers la droite
+                    if(sprite->is_attacking == 1){ //is_attacking
+                        SDL_RenderCopy(renderer, spriteTexture, &sprite->attack_rects[sprite->current_frame_attack], &sprite->dest_rect);
+                    }else{ // !is_attacking
+                        SDL_RenderCopy(renderer, spriteTexture, &sprite->walk_rects[sprite->current_frame_walk], &sprite->dest_rect);
+                    }
+                }else{ // sans arme + vers la gauche
+                    if(sprite->is_attacking == 1){ //is_attacking
+                        SDL_RenderCopyEx(renderer, spriteTexture, &sprite->attack_rects[sprite->current_frame_attack], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL);
+                    }else{ // !is_attacking
+                        SDL_RenderCopyEx(renderer, spriteTexture, &sprite->walk_rects[sprite->current_frame_walk], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+                    }
                 }
-            }else{ // sans arme + vers la gauche
-                if(sprite->is_attacking == 1){ //is_attacking
-                    SDL_RenderCopyEx(renderer, spriteTexture, &sprite->attack_rects[sprite->current_frame_attack], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL);
-                }else{ // !is_attacking
-                    SDL_RenderCopyEx(renderer, spriteTexture, &sprite->walk_rects[sprite->current_frame_walk], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+            }else{ // le sprite a son arme
+                if(sprite->vers_la_droite == 1){ //  arme + vers la droite
+                    if(sprite->is_attacking == 1){ //is_attacking
+                        SDL_RenderCopy(renderer, spriteTexture, &sprite->attack_with_weapeon_rects[sprite->current_frame_attack_with_weapeon], &sprite->dest_rect);
+                    }else{ // !is_attacking
+                        SDL_RenderCopy(renderer, spriteTexture, &sprite->walk_with_weapeon_rects[sprite->current_frame_walk], &sprite->dest_rect);
+                    }
+                }else{ //  arme + vers la gauche
+                    if(sprite->is_attacking == 1){ //is_attacking
+                        SDL_RenderCopyEx(renderer, spriteTexture, &sprite->attack_with_weapeon_rects[sprite->current_frame_attack_with_weapeon], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL);
+                    }else{ // !is_attacking
+                        SDL_RenderCopyEx(renderer, spriteTexture, &sprite->walk_with_weapeon_rects[sprite->current_frame_walk], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
+                    }    
                 }
-            }
-        }else{ // le sprite a son arme
-            if(sprite->vers_la_droite == 1){ //  arme + vers la droite
-                if(sprite->is_attacking == 1){ //is_attacking
-                    SDL_RenderCopy(renderer, spriteTexture, &sprite->attack_with_weapeon_rects[sprite->current_frame_attack_with_weapeon], &sprite->dest_rect);
-                }else{ // !is_attacking
-                    SDL_RenderCopy(renderer, spriteTexture, &sprite->walk_with_weapeon_rects[sprite->current_frame_walk], &sprite->dest_rect);
-                }
-            }else{ //  arme + vers la gauche
-                if(sprite->is_attacking == 1){ //is_attacking
-                    SDL_RenderCopyEx(renderer, spriteTexture, &sprite->attack_with_weapeon_rects[sprite->current_frame_attack_with_weapeon], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL);
-                }else{ // !is_attacking
-                    SDL_RenderCopyEx(renderer, spriteTexture, &sprite->walk_with_weapeon_rects[sprite->current_frame_walk], &sprite->dest_rect,0,NULL,SDL_FLIP_HORIZONTAL) ;
-                }    
             }
         }
+    }else{ //the sprite die
+        if(sprite->current_frame_death < 5){
+            sprite->current_frame_death = sprite->current_frame_death + 1 ;
+            SDL_Delay(80); //une petite pause
+        }
+        SDL_RenderCopy(renderer, spriteTexture, &sprite->death_rects[sprite->current_frame_death], &sprite->dest_rect);
+        
     }
+
 }
 
 void SDL_RenderCopyEnnemis(liste ennemis, SDL_Renderer* renderer, SDL_Texture* ennemyTexture){
@@ -200,7 +210,9 @@ void display_life_bar_ennemy(SDL_Renderer *renderer, liste ennemis){
     SDL_Color color = {255, 0, 0, 255};
     while(! is_empty(temp)){
         sprite_t current_ennemy = value(temp) ;
-        display_life_bar(renderer, current_ennemy.dest_rect.x, current_ennemy.dest_rect.y - 5, SPRITE_WIDTH, 7, current_ennemy.HP, HP_INITIAL, color) ;
+        if(current_ennemy.HP > 0){
+            display_life_bar(renderer, current_ennemy.dest_rect.x, current_ennemy.dest_rect.y - 5, SPRITE_WIDTH, 7, current_ennemy.HP, HP_INITIAL, color) ;
+        }
         temp = next(temp) ;
     }
 }
@@ -223,7 +235,7 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     display_life_bar_ennemy(renderer, world->ennemis) ;
     // life_bar player
     SDL_Color color = {0, 0, 255, 255};
-    display_life_bar(renderer, 5, 5, 2*PLATFORM_SIZE, PLATFORM_SIZE, world->player.HP, HP_INITIAL, color) ;
+    display_life_bar(renderer, 5, 5, 2*PLATFORM_SIZE, PLATFORM_SIZE*3/4, world->player.HP, HP_INITIAL, color) ;
     // Afficher tout dans la fenÃªtre
     SDL_RenderPresent(renderer);
 }
