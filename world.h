@@ -466,10 +466,10 @@ void handle_colliding_with_piece(sprite_t *sprite , fixedSprite_t* tab_coins, in
 */
 void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateForme, int Screenwidth, sprite_t * player) ;
 /**
- * \brief la fonction qui permet au joueur d'attaquer les ennemis
+ * \brief la fonction qui permet au sprite d'attaquer les ennemis
  * \param sprite le sprite
 */
-void attack_player(sprite_t* sprite) ;
+void attack_sprite(sprite_t* sprite) ;
 
 /**
  * \brief la fonction qui permet au joueur d'attaquer les ennemis
@@ -534,4 +534,6 @@ bool player_is_colliding_right_with_ennemis(sprite_t* player, liste ennemis) ;
 */
 void handle_attack_player(sprite_t* player, liste ennemis) ;
 
+
+void delete_ennemy(liste *ennemis) ;
 #endif

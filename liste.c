@@ -95,11 +95,20 @@ void change_HP(liste l, int new_HP){
     }
 }
 
+void change_next(liste l, node_t* new_next){
+    if (is_empty(l)) {
+        fprintf(stderr, "Erreur: Tentative de modifier (change_next) d'une liste vide.\n");
+        exit(EXIT_FAILURE);
+    }else{
+    l->next = new_next ;
+    }
+}    
+
 void liberer_liste(liste l) {
     while (! is_empty(l)) {
         // Stocker le nœud actuel
         liste temp = l;       
-        //liberer les tableux dans temps
+        //liberer les tableaux dans la structure sprite_t
         free(temp->data.walk_rects) ;
         free(temp->data.walk_with_weapeon_rects) ;
         free(temp->data.jump_rects) ;

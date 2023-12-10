@@ -158,8 +158,8 @@ void SDL_RenderCopySprite(sprite_t* sprite, SDL_Renderer* renderer, SDL_Texture*
     }else{ //the sprite die
         if(sprite->current_frame_death < 5){
             sprite->current_frame_death = sprite->current_frame_death + 1 ;
-            SDL_Delay(80); //une petite pause
         }
+        SDL_Delay(80); //une petite pause
         SDL_RenderCopy(renderer, spriteTexture, &sprite->death_rects[sprite->current_frame_death], &sprite->dest_rect);
         
     }

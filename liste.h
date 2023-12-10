@@ -122,6 +122,8 @@ void change_value_current_frame_death(liste l, int new_current_frame_death) ;
  */
 void change_HP(liste l, int new_HP) ;
 
+void change_next(liste l, node_t* new_next) ;
+
 /**
  * @brief Libère la mémoire associée à tous les nœuds de la liste.
  * Cette fonction libère la mémoire allouée pour chaque nœud de la liste, en commençant par la tête.
