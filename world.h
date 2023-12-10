@@ -102,6 +102,11 @@
 #define ENDLEVEL_WIDTH 40
 
 /**
+ * le temps de minimum pour qu'un sprite puisse attack 
+*/
+#define TIME_MIN_ATTACK 1000
+
+/**
  * la hauteur du drapeau 
 */
 #define ENDLEVEL_HEIGHT 64
@@ -534,6 +539,23 @@ bool player_is_colliding_right_with_ennemis(sprite_t* player, liste ennemis) ;
 */
 void handle_attack_player(sprite_t* player, liste ennemis) ;
 
+/**
+ * \brief la fonction met is attacking de l'ennemy a 1 si l'ennemy doit attaquer
+ * \param player le joueur
+ * \param ennemis liste de monstre
+*/
+void handle_ennemy_is_attacking(sprite_t* player, liste ennemis) ;
 
+/**
+ * \brief la fonction qui permet aux ennemis d'attaquer 
+ * \param ennemis liste de monstre
+*/
+void attack_ennemis(liste ennemis) ;
+
+/**
+ * \brief la fonction qui permet de supprimer un monstre mort de la liste
+ * \param ennemis liste de monstre
+*/
 void delete_ennemy(liste *ennemis) ;
+
 #endif

@@ -650,17 +650,19 @@ void update_data(world_t* world, int screen_Height, int screen_Width){
     moving_ennemis(world->ennemis, world->tab_platesFormes, world->nbPlateForme, screen_Width, &world->player)  ;
     // gestion des attaques du joueur
     handle_attack_player(&world->player, world->ennemis) ;
-    //attack du joueur
     attack_sprite(&world->player) ;
     //supprimer les ennemis morts
     delete_ennemy(&world->ennemis) ;
+    //gestion des attack des ennemis
+    handle_ennemy_is_attacking(&world->player, world->ennemis) ;
+    attack_ennemis(world->ennemis) ;
     //geston colision avec le drapeau
     if(is_colliding(&world->player , &world->endLevel)){
         world->gameOver = 1 ;
         printf(" !!!!!!!! You finish the first level with %d/%d coins !!!!!!!! \n", world->player.nbPieceRamasse, world->nbPiece) ;
     }
     //la fin du jeu
-    if(world->player.dest_rect.y + SPRITE_HEIGHT == screen_Height || world->player.HP <= 0){
+    if(world->player.dest_rect.y + SPRITE_HEIGHT == screen_Height || (world->player.HP <= 0 && world->player.current_frame_death == NOMBRE_FRAMES_DEATH - 1)){
         world->gameOver = 1 ;
         printf(" !!!!!!!! Game Over !!!!!!!! \n") ;
     }
@@ -950,26 +952,55 @@ void handle_attack_player(sprite_t* player, liste ennemis){
                     change_HP(temp,new_HP) ;
                 }
             
-                printf("HP : %d \n", current_ennemy.HP) ;
-            
             }
         }
         temp = next(temp);
     }
 }
 
+void handle_ennemy_is_attacking(sprite_t* player, liste ennemis){
+    srand(time(NULL));
+    liste temp = ennemis ;
+    while(! is_empty(temp)){
+        sprite_t current_ennemy = value(temp);
+        Uint32 actual_time = SDL_GetTicks();
+        if(actual_time - current_ennemy.lastAttackTime >= TIME_MIN_ATTACK){
+            if(sprite1_is_coliding_with_sprite2(player, &current_ennemy) && ((player->dest_rect.x < current_ennemy.dest_rect.x && current_ennemy.vers_la_droite == 0 ) || (player->dest_rect.x > current_ennemy.dest_rect.x && current_ennemy.vers_la_droite == 1))){
+                change_is_attacking(temp,1) ; // le l'ennemy attack
+                if(current_ennemy.weapeon == 0){
+                    player->HP = player->HP - generateRandomNumber(5,20);
+                }else{
+                    player->HP = player->HP - generateRandomNumber(10,40);
+                }
+                change_lastAttackTime(temp,SDL_GetTicks()) ; //mise a jour de lastAttackTime
+            }
+        }
+        temp = next(temp);
+    }
+}
 
-// void handle_attack_ennemy(sprite_t* player, liste ennemis){
-//     srand(time(NULL));
-//     liste temp = ennemis ;
-//     while(! is_empty(temp)){
-//         sprite_t current_ennemy = value(temp);
-//         if(sprite1_is_coliding_with_sprite2(player, &current_ennemy)){
-
-//         }
-//         temp = next(temp);
-//     }
-// }
+void attack_ennemis(liste ennemis){
+    liste temp = ennemis ;
+    while(! is_empty(temp)){
+        sprite_t current_ennemy = value(temp);
+        if(current_ennemy.is_attacking == 1){ // is_attacking
+            if(current_ennemy.weapeon == 0){ //sans arme
+                change_current_frame_attack(temp, current_ennemy.current_frame_attack + 1) ;
+                if(current_ennemy.current_frame_attack == NOMBRE_FRAMES_ATTACK - 1){ // fin attack
+                    change_is_attacking(temp,0) ; // initial
+                    change_current_frame_attack(temp,0) ; // initial
+                }
+            }else{ // avec arme
+                change_current_frame_attack_with_weapeon(temp, current_ennemy.current_frame_attack_with_weapeon + 1) ;
+                if(current_ennemy.current_frame_attack_with_weapeon == NOMBRE_FRAMES_ATTACK_WITH_WEAPEON - 1){ // fin attack
+                    change_is_attacking(temp,0); // initial
+                    change_current_frame_attack_with_weapeon(temp,0) ; // initial
+                }
+            }
+        }
+        temp = next(temp);
+    }
+}
 
 void delete_ennemy(liste *ennemis) {
     liste temp = *ennemis;
@@ -977,7 +1008,7 @@ void delete_ennemy(liste *ennemis) {
 
     while (!is_empty(temp)) {
         sprite_t current_ennemy = value(temp);
-        if (current_ennemy.HP <= 0 && current_ennemy.current_frame_death == 5) {
+        if (current_ennemy.HP <= 0 && current_ennemy.current_frame_death == NOMBRE_FRAMES_DEATH - 1) {
             // Si l'ennemi à supprimer est en tête de liste
             if (prec == NULL) {
                 *ennemis = temp->next;

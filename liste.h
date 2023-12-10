@@ -122,6 +122,39 @@ void change_value_current_frame_death(liste l, int new_current_frame_death) ;
  */
 void change_HP(liste l, int new_HP) ;
 
+/**
+ * @brief remplace l'ancien valeur de is_attacking du sprite par la nouvelle .
+ * @param l La liste .
+ * @param a la nouvelle is_attacking pour le sprite en tete de la liste
+ */
+void change_is_attacking(liste l, int a) ; 
+
+/**
+ * @brief remplace l'ancien valeur de lastAttackTime du sprite par la nouvelle .
+ * @param l La liste .
+ * @param time la nouvelle lastAttackTime pour le sprite en tete de la liste
+ */
+void change_lastAttackTime(liste l, Uint32 time) ;
+
+/**
+ * @brief remplace l'ancien valeur de current_frame_attack du sprite par la nouvelle .
+ * @param l La liste .
+ * @param new_frame_attack la nouvelle current_frame_attack pour le sprite en tete de la liste
+ */
+void change_current_frame_attack(liste l, int new_frame_attack) ;
+
+/**
+ * @brief remplace l'ancien valeur de current_frame_attack_with_weapeon du sprite par la nouvelle .
+ * @param l La liste .
+ * @param new_frame_attack_with_weapeon la nouvelle current_frame_attack_with_weapeon pour le sprite en tete de la liste
+ */
+void change_current_frame_attack_with_weapeon(liste l, int new_frame_attack_with_weapeon) ;
+
+/**
+ * @brief remplace l'ancien valeur de next du sprite par la nouvelle .
+ * @param l La liste .
+ * @param new_next la nouvelle next pour le sprite en tete de la liste
+ */
 void change_next(liste l, node_t* new_next) ;
 
 /**

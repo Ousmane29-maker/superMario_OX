@@ -45,7 +45,7 @@ void change_value_x(liste l, int new_x)
         fprintf(stderr, "Erreur: Tentative de modifier (change_value_x) d'une liste vide.\n");
         exit(EXIT_FAILURE);
     }else{
-    l->data.dest_rect.x = new_x ;
+        l->data.dest_rect.x = new_x ;
     }
 }
 
@@ -55,7 +55,7 @@ void change_value_y(liste l, int new_y)
         fprintf(stderr, "Erreur: Tentative de modifier (change_value_y) d'une liste vide.\n");
         exit(EXIT_FAILURE);
     }else{
-    l->data.dest_rect.y = new_y ;
+        l->data.dest_rect.y = new_y ;
     }
 }
 
@@ -64,7 +64,7 @@ void change_value_vers_la_droite(liste l , int new_direction){
         fprintf(stderr, "Erreur: Tentative de modifier (change_value_vers_la_droite) d'une liste vide.\n");
         exit(EXIT_FAILURE);
     }else{
-    l->data.vers_la_droite = new_direction ;
+        l->data.vers_la_droite = new_direction ;
     }
 }
 
@@ -73,7 +73,7 @@ void change_value_current_frame_walk(liste l, int new_current_frame_walk){
         fprintf(stderr, "Erreur: Tentative de modifier (change_value_current_frame_walk) d'une liste vide.\n");
         exit(EXIT_FAILURE);
     }else{
-    l->data.current_frame_walk = new_current_frame_walk ;
+        l->data.current_frame_walk = new_current_frame_walk ;
     }
 }
 
@@ -82,7 +82,7 @@ void change_value_current_frame_death(liste l, int new_current_frame_death){
         fprintf(stderr, "Erreur: Tentative de modifier (change_value_current_frame_death) d'une liste vide.\n");
         exit(EXIT_FAILURE);
     }else{
-    l->data.current_frame_death = new_current_frame_death ;
+        l->data.current_frame_death = new_current_frame_death ;
     }
 }
 
@@ -91,7 +91,43 @@ void change_HP(liste l, int new_HP){
         fprintf(stderr, "Erreur: Tentative de modifier (change_HP) d'une liste vide.\n");
         exit(EXIT_FAILURE);
     }else{
-    l->data.HP = new_HP ;
+        l->data.HP = new_HP ;
+    }
+}
+
+void change_is_attacking(liste l, int a){
+    if (is_empty(l)) {
+        fprintf(stderr, "Erreur: Tentative de modifier (change_is_attacking) d'une liste vide.\n");
+        exit(EXIT_FAILURE);
+    }else{
+        l->data.is_attacking = a ;
+    }
+}
+
+void change_lastAttackTime(liste l, Uint32 time){
+    if (is_empty(l)) {
+        fprintf(stderr, "Erreur: Tentative de modifier (change_lastAttackTime) d'une liste vide.\n");
+        exit(EXIT_FAILURE);
+    }else{
+        l->data.lastAttackTime = time ;
+    }
+}
+
+void change_current_frame_attack(liste l, int new_frame_attack){
+    if (is_empty(l)) {
+        fprintf(stderr, "Erreur: Tentative de modifier (change_current_frame_attack) d'une liste vide.\n");
+        exit(EXIT_FAILURE);
+    }else{
+        l->data.current_frame_attack = new_frame_attack ;
+    }
+}
+
+void change_current_frame_attack_with_weapeon(liste l, int new_frame_attack_with_weapeon){
+    if (is_empty(l)) {
+        fprintf(stderr, "Erreur: Tentative de modifier (change_current_frame_attack_with_weapeon) d'une liste vide.\n");
+        exit(EXIT_FAILURE);
+    }else{
+        l->data.current_frame_attack_with_weapeon = new_frame_attack_with_weapeon ;
     }
 }
 
@@ -100,7 +136,7 @@ void change_next(liste l, node_t* new_next){
         fprintf(stderr, "Erreur: Tentative de modifier (change_next) d'une liste vide.\n");
         exit(EXIT_FAILURE);
     }else{
-    l->next = new_next ;
+        l->next = new_next ;
     }
 }    
 
