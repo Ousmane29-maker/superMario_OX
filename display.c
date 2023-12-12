@@ -28,6 +28,7 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
     ressources->piece = charger_image("ressources/piece.bmp", renderer) ;
     ressources->menu = charger_image("ressources/menu.bmp", renderer) ;
     ressources->menubackground = charger_image("ressources/menubackground.bmp", renderer) ;
+    ressources->font = load_font("ressources/arial.ttf", 28);
 
 }
 
@@ -40,6 +41,7 @@ void clean_ressources(ressources_t *ressources){
     SDL_DestroyTexture(ressources->piece);
     SDL_DestroyTexture(ressources->menu);
     SDL_DestroyTexture(ressources->menubackground);
+    clean_font(ressources->font);
 }
 
 SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer){
@@ -100,6 +102,34 @@ SDL_Texture* charger_image_transparente(const char* nomfichier, SDL_Renderer* re
     SDL_FreeSurface(surface);
     
     return texture;
+}
+
+void init_ttf(){
+    if(TTF_Init()==-1) {
+        printf("TTF_Init: %s\n", TTF_GetError());
+    }
+}
+
+void charger_texte(SDL_Renderer *renderer,int x, int y, int w, int h, const char *text, TTF_Font *font){
+
+    SDL_Color color = { 0,0,0,0};
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect dstrect2 = {x, y, w, h};
+    SDL_RenderCopy(renderer, texture, NULL, &dstrect2);
+}
+
+
+TTF_Font * load_font(const char *path, int font_size){
+    TTF_Font *font = TTF_OpenFont(path, font_size);
+    if(font == NULL){
+        fprintf(stderr, "Erreur pendant chargement font: %s\n", SDL_GetError());
+    }
+    return font;
+}
+
+void clean_font(TTF_Font * font){
+    TTF_CloseFont(font);
 }
 
 
@@ -221,6 +251,8 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     SDL_RenderClear(renderer);   
     // le fond
     SDL_RenderCopy(renderer, ressources->background,NULL, NULL);
+    // le font
+    charger_texte(renderer, 10, 30, 50, 25, "Timer :", ressources->font);
     // Copier les platformes dans le renderer
     SDL_RenderCopyPlateFormes(world->tab_platesFormes, renderer, ressources->pavage, world->nbPlateForme);
     // Copier les pieces dans le renderer

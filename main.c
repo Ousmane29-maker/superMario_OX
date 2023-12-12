@@ -19,11 +19,13 @@ int main() {
         exit(EXIT_FAILURE) ;
 
     }
-    // Initialiser la SDL et crÃ©er la fenÃªtre
+    //initialiser le font
+    init_ttf();
+    // initialiser la SDL et crÃ©er la fenÃªtre
     init_sdl(&fenetre, &ecran, nbCol*PLATFORM_SIZE, nbLig*PLATFORM_SIZE);
     //initialiser les ressources
     init_ressources(ecran, &ressources) ;
-    // Initialiser le monde
+    // initialiser le monde
     init_world(&world, "ressources/terrain.txt");
     
     SDL_RenderClear(ecran); 
@@ -74,7 +76,7 @@ int main() {
                         world.gameOver = 1;
                 }
                         
-                SDL_Log("mouse down(x:%d, y:%d)", events.button.x, events.button.y);
+                // SDL_Log("mouse down(x:%d, y:%d)", events.button.x, events.button.y);
                 break;
         }
 

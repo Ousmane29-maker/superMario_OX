@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -W -Wall -ansi -std=c99 -g
 LIBS = 
-LDFLAGS = `sdl2-config --cflags --libs` 
+LDFLAGS = `sdl2-config --cflags --libs` -lSDL2_ttf -lm
 INCLUDES = 
 EXEC = superMario_OX
 SRC = main.c world.c display.c liste.c
