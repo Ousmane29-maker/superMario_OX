@@ -28,6 +28,8 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
     ressources->piece = charger_image("ressources/piece.bmp", renderer) ;
     ressources->menu = charger_image("ressources/menu.bmp", renderer) ;
     ressources->menubackground = charger_image("ressources/menubackground.bmp", renderer) ;
+    ressources->win = charger_image("ressources/you_win.bmp", renderer) ;
+    ressources->lose = charger_image("ressources/you_lose.bmp", renderer) ;
 
 }
 
@@ -40,6 +42,8 @@ void clean_ressources(ressources_t *ressources){
     SDL_DestroyTexture(ressources->piece);
     SDL_DestroyTexture(ressources->menu);
     SDL_DestroyTexture(ressources->menubackground);
+    SDL_DestroyTexture(ressources->win);
+    SDL_DestroyTexture(ressources->lose);
 }
 
 SDL_Texture* charger_image (const char* nomfichier, SDL_Renderer* renderer){
@@ -235,7 +239,17 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     display_life_bar_ennemy(renderer, world->ennemis) ;
     // life_bar player
     SDL_Color color = {0, 0, 255, 255};
-    display_life_bar(renderer, 5, 5, 2*PLATFORM_SIZE, PLATFORM_SIZE*3/4, world->player.HP, HP_INITIAL, color) ;
+    display_life_bar(renderer, 5, 5, 2*PLATFORM_SIZE, PLATFORM_SIZE*3/4, world->player.HP, HP_INITIAL, color) ; // cette life bar est fixe ;
     // Afficher tout dans la fenÃªtre
     SDL_RenderPresent(renderer);
+}
+void print_end_game(SDL_Renderer* renderer, world_t *world, ressources_t* ressources){ 
+    SDL_RenderClear(renderer);
+    if(is_colliding(&world->player , &world->endLevel)){
+        SDL_RenderCopy(renderer, ressources->win, NULL, NULL);  
+    }else{
+        SDL_RenderCopy(renderer, ressources->lose, NULL, NULL); 
+    }
+    SDL_RenderPresent(renderer);
+    SDL_Delay(1000) ;
 }

@@ -20,7 +20,7 @@ int main() {
 
     }
     // Initialiser la SDL et crÃ©er la fenÃªtre
-    init_sdl(&fenetre, &ecran, nbCol*PLATFORM_SIZE, nbLig*PLATFORM_SIZE);
+    init_sdl(&fenetre, &ecran, WINDOW_WIDTH, nbLig*PLATFORM_SIZE);
     //initialiser les ressources
     init_ressources(ecran, &ressources) ;
     // Initialiser le monde
@@ -60,11 +60,12 @@ int main() {
                         SDL_Delay(20);
                         // Attendre environ 1000 milliseconde apres la fin du jeu
                         if(is_game_over(&world)){
-                            handle_hightScore("ressources/hightScore.txt", &world.player) ;
+                            handle_hightScore("ressources/hightScore.txt", &world.player, world.tab_Score) ;
                             SDL_Delay(1000) ;
                         }
                     }
-                                    
+
+                    print_end_game(ecran, &world, &ressources) ;               
                                     
                 }
                 //check if the mouse clicked in the exit button

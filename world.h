@@ -7,6 +7,12 @@
 
 
 /**
+ * la largeur de la fenetre
+*/
+#define WINDOW_WIDTH 800
+
+
+/**
  * la taille d'une plateform 
 */
 #define PLATFORM_SIZE 32
@@ -104,12 +110,18 @@
 /**
  * le temps de minimum pour qu'un sprite puisse attack 
 */
-#define TIME_MIN_ATTACK 1000
+#define TIME_MIN_ATTACK 500
 
 /**
  * la hauteur du drapeau 
 */
 #define ENDLEVEL_HEIGHT 64
+
+/**
+ * la nombre de meuilleures scores
+*/
+#define TAILLE_TABLEAU_SCORE 5
+
 
 /**
  * la hauteur du button 
@@ -168,6 +180,8 @@ typedef struct world_s {
     // SDL_Rect* tab_Src_Menu; /**< Champ correspondant au tableau de menu. */
     // SDL_Rect* tab_Dest_Menu; /**< Champ correspondant au tableau de menu. */
     fixedSprite_t* tab_menu;
+    SDL_Rect cameraRect ; /**< Champ correspondant au camera du jeu . */
+    int tab_Score[TAILLE_TABLEAU_SCORE] ; /**< Champ correspondant au tableau de meuilleures scores. */
 } world_t;
     
 
@@ -211,9 +225,9 @@ void taille_fichier(const char* nomFichier, int* nbLig, int* nbCol);
 */
 char** lire_fichier(const char* nomFichier);
 
-void ecrire_fichier_heightScore(const char* nomFichier, int hightScore) ;
+void ecrire_fichier_heightScore(const char* nomFichier, int tableau[]);
 
-int lire_heightScore(const char* nomFichier) ;
+void lire_heightScore(const char* nomFichier, int tableau[]) ;
 
 /**
 * @param char** tab
@@ -511,8 +525,9 @@ SDL_Rect* init_tab_src_labels();
  * \brief la fonction qui gere les meuilleures scores
  * \param nomFichier le nom du fichier 
  * \param player le joueur
+ * \param tableau le tableau des meuilleures score
 */
-void handle_hightScore(const char* nomFichier, sprite_t* player) ;
+void handle_hightScore(const char* nomFichier, sprite_t* player, int tableau[]) ;
 
 /**
  * \brief la fonction retourne vrai si les 2 sprites ne sont pas en collision
@@ -557,5 +572,9 @@ void attack_ennemis(liste ennemis) ;
  * \param ennemis liste de monstre
 */
 void delete_ennemy(liste *ennemis) ;
+
+void adjustObjectCoordinates(SDL_Rect* objectRect, SDL_Rect cameraRect) ;
+
+void adjustAllObjectsCoordinates(world_t* world) ;
 
 #endif

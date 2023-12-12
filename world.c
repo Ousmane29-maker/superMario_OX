@@ -165,41 +165,33 @@ void ecrire_fichier(const char* nomFichier, char** tab, int n, int m){
     }
 }
 
-void ecrire_fichier_heightScore(const char* nomFichier, int hightScore){
-    FILE* fichier = NULL;
-    fichier = fopen(nomFichier, "w");
-    if(fichier != NULL){
-        //le nombre de chiffre
-        int nbChiffre = 1 ;
-        int n = hightScore ;
-        while(n >= 10){
-            nbChiffre++ ;
-            n = n/10 ; 
+void ecrire_fichier_heightScore(const char* nomFichier, int tableau[]){
+    FILE *fichier = fopen(nomFichier, "w");
+    if (fichier == NULL) {
+        perror("Error opening file") ;
+    }else{
+        for(int i = 0; i < TAILLE_TABLEAU_SCORE; i++){
+            fprintf(fichier,"%d\n", tableau[i]) ;
         }
-        // transformation en chaine de caracteree
-        char chaine[nbChiffre + 1];
-        sprintf(chaine, "%d", hightScore);
-        // ecriture de la chaine
-        fputs(chaine,fichier) ; 
     }
     fclose(fichier);
-}
-int lire_heightScore(const char* nomFichier){
-    FILE* fichier = NULL;
-    fichier = fopen(nomFichier, "r");
-    if(fichier != NULL){
-        // Recuperation de la chaine de caractere
-        char str[10];
-        fgets(str, sizeof(str), fichier) ;
-        fclose(fichier); //on ferme le fichier
-        //Conversion d'une chaine en entier
-        int heightScore = atoi(str);
-        return heightScore ;
 
+}
+void lire_heightScore(const char* nomFichier, int tableau[]){
+    FILE *fichier = fopen(nomFichier, "r");
+    if (fichier == NULL) {
+        perror("Error opening file") ;
     }else{
-        fprintf(stderr, "Erreur de lecture du fichier.\n");
-        return -1 ;
+        int entier;
+        int indice = 0;
+        // Lire jusqu'à la fin du fichier et  remplir le tableau
+        while (fscanf(fichier, "%d", &entier) == 1 && indice < TAILLE_TABLEAU_SCORE) {
+            tableau[indice] = entier;
+            indice++;
+        }
     }
+    fclose(fichier);
+
 }
 
 int nbrPlateformes(char** tab_terrain, int n, int m){
@@ -527,6 +519,15 @@ void init_world(world_t* world, const char* nomFichier){
     exit(EXIT_FAILURE);  // Quitter le programme en cas d'erreur critique
     }
     init_tab_menu(world->tab_menu,nbLig * PLATFORM_SIZE,nbCol * PLATFORM_SIZE);
+    // initialisation de la camera
+    world->cameraRect.x = 0;
+    world->cameraRect.y = 0;
+    world->cameraRect.w = nbCol * PLATFORM_SIZE;
+    world->cameraRect.h = PLATFORM_SIZE * nbLig;
+    // initialisation du tableau des meuilleures scores a 0
+    for(int i = 0; i < TAILLE_TABLEAU_SCORE; i++){
+        world->tab_Score[i] = 0 ;
+    }
     
 }
 
@@ -628,6 +629,9 @@ void limite_droite(sprite_t* sprite, int screen_Width){
 
 
 void update_data(world_t* world, int screen_Height, int screen_Width){
+    // Placez la caméra autour du joueur 
+    world->cameraRect.x = world->player.dest_rect.x  - world->cameraRect.w / 2;
+    adjustAllObjectsCoordinates(world)  ;
     //gestion des limites du jeu
     limite_haut(&world->player);
     limite_bas(&world->player, screen_Height);
@@ -827,16 +831,6 @@ void moving_ennemis(liste ennemis, fixedSprite_t* tab_platesFormes, int nbPlateF
                 change_value_x(temp, current_sprite.dest_rect.x + 1);
                 change_value_current_frame_walk(temp, current_sprite.current_frame_walk + 1);
             }
-            // // Colision a gauche
-            // if (is_colliding_left_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x < 0){
-            //     change_value_vers_la_droite(temp, 1);
-            //     change_value_x(temp, current_sprite.dest_rect.x + 1);
-            // }
-            // Colision a droite
-            // if (is_colliding_right_with_a_platform(&current_sprite, tab_platesFormes, nbPlateForme) || current_sprite.dest_rect.x + SPRITE_WIDTH > Screenwidth){
-            //     change_value_vers_la_droite(temp, 0);
-            //     change_value_x(temp, current_sprite.dest_rect.x - 1);
-            // }
             // Gestion du frame walk
             if (current_sprite.current_frame_walk >= NOMBRE_FRAMES_WALK - 1) {
                 change_value_current_frame_walk(temp, 0);
@@ -881,11 +875,19 @@ bool is_click_play(fixedSprite_t* tab_menu, int position_x, int position_y){
 
 }   
 
-void handle_hightScore(const char* nomFichier, sprite_t* player){
-    int heightScore = lire_heightScore(nomFichier);
-    if(player->nbPieceRamasse > heightScore) {
-        ecrire_fichier_heightScore(nomFichier, player->nbPieceRamasse) ;
+void handle_hightScore(const char* nomFichier, sprite_t* player, int tableau[]){
+    int new_score = player->nbPieceRamasse ;
+    lire_heightScore(nomFichier, tableau) ;
+    // mise a jour des meuilleures scores
+    for(int i = 0; i < TAILLE_TABLEAU_SCORE; i++){
+        if(new_score > tableau[i]){
+            tableau[i] = new_score;
+            break ;
+        }
     }
+    //ecriture des meuilleures scores dans le fichier
+    ecrire_fichier_heightScore(nomFichier, tableau) ;
+    
 }
 
 bool sprite1_is_coliding_with_sprite2(sprite_t* sprite1, sprite_t* sprite2){
@@ -968,9 +970,9 @@ void handle_ennemy_is_attacking(sprite_t* player, liste ennemis){
             if(sprite1_is_coliding_with_sprite2(player, &current_ennemy) && ((player->dest_rect.x < current_ennemy.dest_rect.x && current_ennemy.vers_la_droite == 0 ) || (player->dest_rect.x > current_ennemy.dest_rect.x && current_ennemy.vers_la_droite == 1))){
                 change_is_attacking(temp,1) ; // le l'ennemy attack
                 if(current_ennemy.weapeon == 0){
-                    player->HP = player->HP - generateRandomNumber(5,20);
+                    player->HP = player->HP - generateRandomNumber(0,10);
                 }else{
-                    player->HP = player->HP - generateRandomNumber(10,40);
+                    player->HP = player->HP - generateRandomNumber(5,20);
                 }
                 change_lastAttackTime(temp,SDL_GetTicks()) ; //mise a jour de lastAttackTime
             }
@@ -1030,3 +1032,31 @@ void delete_ennemy(liste *ennemis) {
     }
 }
 
+
+void adjustObjectCoordinates(SDL_Rect* objectRect, SDL_Rect cameraRect) {
+    objectRect->x -= cameraRect.x;
+    //objectRect->y -= cameraRect.y;
+}
+
+void adjustAllObjectsCoordinates(world_t* world) {
+    // Ajuster les coordonnées du joueur
+    adjustObjectCoordinates(&world->player.dest_rect, world->cameraRect);
+
+    // Ajuster les coordonnées des plateformes
+    for (int i = 0; i < world->nbPlateForme; i++) {
+        adjustObjectCoordinates(&world->tab_platesFormes[i].dest_rect, world->cameraRect);
+    }
+    // Ajuster les coordonnées des pieces
+    for (int i = 0; i < world->nbPiece; i++) {
+        adjustObjectCoordinates(&world->tab_coins[i].dest_rect, world->cameraRect);
+    }
+    // Ajuster les coordonnées du drapeau
+    adjustObjectCoordinates(&world->endLevel.dest_rect, world->cameraRect);
+    // Ajuster les coordonnées des ennemis
+    liste temp = world->ennemis ;
+    while(!is_empty(temp)){
+        sprite_t current_ennemy = value(temp);
+        change_value_x(temp, current_ennemy.dest_rect.x - world->cameraRect.x);
+        temp = next(temp);
+    }
+}
