@@ -177,8 +177,6 @@ typedef struct world_s {
     fixedSprite_t* tab_coins ; /**< Champ correspondant au tableau de pieces. */
     int nbPiece ; /**< Champ correspondant au nombre de plates-formes. */
     liste ennemis ;  /**< liste de sprite_t (les ennemies) */
-    // SDL_Rect* tab_Src_Menu; /**< Champ correspondant au tableau de menu. */
-    // SDL_Rect* tab_Dest_Menu; /**< Champ correspondant au tableau de menu. */
     SDL_Rect cameraRect ; /**< Champ correspondant au camera du jeu . */
     int tab_Score[TAILLE_TABLEAU_SCORE] ; /**< Champ correspondant au tableau de meuilleures scores. */
     fixedSprite_t* tab_menu;/**< Champ correspondant au tableau de menu. */

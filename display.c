@@ -116,7 +116,7 @@ void init_ttf(){
 
 void charger_texte(SDL_Renderer *renderer,int x, int y, int w, int h, const char *text, TTF_Font *font){
 
-    SDL_Color color = { 0,0,0,0};
+    SDL_Color color = { 0,0,255,255};
     SDL_Surface* surface = TTF_RenderText_Solid(font, text, color);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect dstrect2 = {x, y, w, h};
@@ -255,8 +255,8 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     SDL_RenderClear(renderer);   
     // le fond
     SDL_RenderCopy(renderer, ressources->background,NULL, NULL);
-    // le font
-    charger_texte(renderer, 10, 30, 50, 25, "Timer :", ressources->font);
+    // le font dans la fenetre
+    charger_texte(renderer, 5, 5, SPRITE_HEIGHT, SPRITE_HEIGHT/2, "HP :", ressources->font);
     // Copier les platformes dans le renderer
     SDL_RenderCopyPlateFormes(world->tab_platesFormes, renderer, ressources->pavage, world->nbPlateForme);
     // Copier les pieces dans le renderer
@@ -271,7 +271,7 @@ void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ress
     display_life_bar_ennemy(renderer, world->ennemis) ;
     // life_bar player
     SDL_Color color = {0, 0, 255, 255};
-    display_life_bar(renderer, 5, 5, 2*PLATFORM_SIZE, PLATFORM_SIZE*3/4, world->player.HP, HP_INITIAL, color) ; // cette life bar est fixe ;
+    display_life_bar(renderer, 55, 5, 2*PLATFORM_SIZE, PLATFORM_SIZE*3/4, world->player.HP, HP_INITIAL, color) ; // cette life bar est fixe ;
     // Afficher tout dans la fenÃªtre
     SDL_RenderPresent(renderer);
 }
@@ -282,6 +282,7 @@ void print_end_game(SDL_Renderer* renderer, world_t *world, ressources_t* ressou
     }else{
         SDL_RenderCopy(renderer, ressources->lose, NULL, NULL); 
     }
+    SDL_RenderCopyMenu(renderer, ressources->menu, world->tab_menu);
     SDL_RenderPresent(renderer);
     SDL_Delay(1000) ;
 }
