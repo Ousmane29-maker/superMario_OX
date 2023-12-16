@@ -77,7 +77,6 @@ int main() {
                         world.gameOver = 1;
                 }
                         
-                // SDL_Log("mouse down(x:%d, y:%d)", events.button.x, events.button.y);
                 break;
         }
 

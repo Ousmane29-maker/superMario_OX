@@ -504,6 +504,10 @@ void init_world(world_t* world, const char* nomFichier){
     }
     init_tab_platesFormes(world->tab_platesFormes, world->tab_terrain, nbLig, nbCol) ;
     init_sprite(&world->player,0,(nbLig * PLATFORM_SIZE - PLATFORM_SIZE) - SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT,0) ;
+    if(!is_colliding_down_with_a_platform(&world->player, world->tab_platesFormes, world->nbPlateForme)){
+        int a = generateRandomNumber(0, world->nbPlateForme);
+        init_sprite(&world->player,world->tab_platesFormes[a].dest_rect.x, world->tab_platesFormes[a].dest_rect.y - SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT,0) ;
+    }
     init_end_Level(&world->endLevel, nbCol * PLATFORM_SIZE - PLATFORM_SIZE, PLATFORM_SIZE) ;
     world->nbPiece =  nbrPieces(world->tab_terrain, nbLig, nbCol) ;
     world->tab_coins = malloc(world->nbPiece * sizeof(fixedSprite_t)) ;
