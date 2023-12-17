@@ -6,10 +6,10 @@
 #include <stdbool.h>
 
 
-/**
- * la largeur de la fenetre
-*/
-#define WINDOW_WIDTH 800
+// /**
+//  * la largeur de la fenetre
+// */
+// #define WINDOW_WIDTH 800
 
 
 /**
@@ -126,22 +126,22 @@
 /**
  * la hauteur du button 
 */
-#define LABEL_HEIGHT 131
+#define LABEL_HEIGHT 1218
 
 /**
  * la largeur du button
 */
-#define LABEL_WIDTH 438
+#define LABEL_WIDTH 2240
 
 /**
  * le nombre du button 
 */
-#define NOMBRE_LABELS 2
+#define NOMBRE_LABELS 3
 
 /**
  * la largeur du button pour la destination
 */
-#define LABEL_DEST_WIDTH 200
+#define LABEL_DEST_WIDTH 150
 
 /**
  * la hauteur du button pour la destination
@@ -169,7 +169,7 @@ typedef struct world_s {
     char** tab_terrain ; /**< Champ representant le tableau de caracteres */
     int gameOver ; /**< Champ indiquant si l'on est Ã  la fin du jeu. */
     int gravity ; /**< Champ indiquant la gravite */
-    int level ; /**< Champ indiquant le level actuel */
+        //int level ; /**< Champ indiquant le level actuel */
     sprite_t player; /**< Champ indiquant le joueur. */
     fixedSprite_t endLevel ;  /**< Champ indiquant le drapeau de fin de jeu. */
     fixedSprite_t* tab_platesFormes; /**< Champ correspondant au tableau de plates-formes. */
@@ -177,7 +177,7 @@ typedef struct world_s {
     fixedSprite_t* tab_coins ; /**< Champ correspondant au tableau de pieces. */
     int nbPiece ; /**< Champ correspondant au nombre de plates-formes. */
     liste ennemis ;  /**< liste de sprite_t (les ennemies) */
-    SDL_Rect cameraRect ; /**< Champ correspondant au camera du jeu . */
+        SDL_Rect cameraRect ; /**< Champ correspondant au camera du jeu . */
     int tab_Score[TAILLE_TABLEAU_SCORE] ; /**< Champ correspondant au tableau de meuilleures scores. */
     fixedSprite_t* tab_menu;/**< Champ correspondant au tableau de menu. */
 } world_t;
@@ -571,8 +571,10 @@ void attack_ennemis(liste ennemis) ;
 */
 void delete_ennemy(liste *ennemis) ;
 
-void adjustObjectCoordinates(SDL_Rect* objectRect, SDL_Rect cameraRect) ;
+// void adjustObjectCoordinates(SDL_Rect* objectRect, SDL_Rect cameraRect) ;
 
-void adjustAllObjectsCoordinates(world_t* world) ;
+// void adjustAllObjectsCoordinates(world_t* world) ;
+
+void clean_world(world_t* world, int nbLig) ;
 
 #endif

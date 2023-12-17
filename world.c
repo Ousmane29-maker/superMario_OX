@@ -446,14 +446,18 @@ liste init_ennemis_level1(int screenWidth, int screenHeight, fixedSprite_t* tab_
 
 SDL_Rect* init_tab_src_labels(){
     SDL_Rect* tab_src_labels = malloc(NOMBRE_LABELS*sizeof(SDL_Rect));
-    tab_src_labels[0].x = 0; 
-    tab_src_labels[0].y = 2; 
+    tab_src_labels[0].x = 163; 
+    tab_src_labels[0].y = 380; 
     tab_src_labels[0].w = LABEL_WIDTH;
     tab_src_labels[0].h = LABEL_HEIGHT;
-    tab_src_labels[1].x = 0;
-    tab_src_labels[1].y = 190;
+    tab_src_labels[1].x = 163;
+    tab_src_labels[1].y = 2154;
     tab_src_labels[1].w = LABEL_WIDTH;
     tab_src_labels[1].h = LABEL_HEIGHT;
+    tab_src_labels[2].x = 163;
+    tab_src_labels[2].y = 3706;
+    tab_src_labels[2].w = LABEL_WIDTH;
+    tab_src_labels[2].h = LABEL_HEIGHT;
 
     return tab_src_labels;
 
@@ -481,6 +485,10 @@ void init_tab_Dest_Menu(fixedSprite_t* tab_menu, int line, int clone){
     tab_menu[1].dest_rect.y = line/2 + 50;
     tab_menu[1].dest_rect.w = LABEL_DEST_WIDTH;
     tab_menu[1].dest_rect.h = LABEL_DEST_HEIGHT;
+    tab_menu[2].dest_rect.x = clone/2 - 100;
+    tab_menu[2].dest_rect.y = line/2 + 125;
+    tab_menu[2].dest_rect.w = LABEL_DEST_WIDTH;
+    tab_menu[2].dest_rect.h = LABEL_DEST_HEIGHT;
 
 }
 
@@ -492,7 +500,7 @@ void init_tab_menu(fixedSprite_t* tab_menu, int line, int clone){
 void init_world(world_t* world, const char* nomFichier){
     world->gameOver = 0 ;
     world->gravity = GRAVITY;
-    world->level = 1 ;
+        // world->level = 1 ;
     int nbLig, nbCol;
     taille_fichier(nomFichier, &nbLig, &nbCol);
     world->tab_terrain = lire_fichier(nomFichier) ; // allocation memoire inclu
@@ -523,11 +531,11 @@ void init_world(world_t* world, const char* nomFichier){
     exit(EXIT_FAILURE);  // Quitter le programme en cas d'erreur critique
     }
     init_tab_menu(world->tab_menu,nbLig * PLATFORM_SIZE,nbCol * PLATFORM_SIZE);
-    // initialisation de la camera
-    world->cameraRect.x = 0;
-    world->cameraRect.y = 0;
-    world->cameraRect.w = nbCol * PLATFORM_SIZE;
-    world->cameraRect.h = PLATFORM_SIZE * nbLig;
+        // // initialisation de la camera
+        // world->cameraRect.x = 0;
+        // world->cameraRect.y = 0;
+        // world->cameraRect.w = WINDOW_WIDTH;
+        // world->cameraRect.h = PLATFORM_SIZE * nbLig;
     // initialisation du tableau des meuilleures scores a 0
     for(int i = 0; i < TAILLE_TABLEAU_SCORE; i++){
         world->tab_Score[i] = 0 ;
@@ -633,9 +641,9 @@ void limite_droite(sprite_t* sprite, int screen_Width){
 
 
 void update_data(world_t* world, int screen_Height, int screen_Width){
-    // Placez la caméra autour du joueur 
-    world->cameraRect.x = world->player.dest_rect.x  - world->cameraRect.w / 2;
-    adjustAllObjectsCoordinates(world)  ;
+        // // Placez la caméra autour du joueur 
+        // world->cameraRect.x = world->player.dest_rect.x  - world->cameraRect.w / 2;
+        // adjustAllObjectsCoordinates(world)  ;
     //gestion des limites du jeu
     limite_haut(&world->player);
     limite_bas(&world->player, screen_Height);
@@ -667,7 +675,7 @@ void update_data(world_t* world, int screen_Height, int screen_Width){
     //geston colision avec le drapeau
     if(is_colliding(&world->player , &world->endLevel)){
         world->gameOver = 1 ;
-        printf(" !!!!!!!! You finish the first level with %d/%d coins !!!!!!!! \n", world->player.nbPieceRamasse, world->nbPiece) ;
+        printf(" !!!!!!!! You finish with %d/%d coins !!!!!!!! \n", world->player.nbPieceRamasse, world->nbPiece) ;
     }
     //la fin du jeu
     if(world->player.dest_rect.y + SPRITE_HEIGHT == screen_Height || (world->player.HP <= 0 && world->player.current_frame_death == NOMBRE_FRAMES_DEATH - 1)){
@@ -1037,30 +1045,44 @@ void delete_ennemy(liste *ennemis) {
 }
 
 
-void adjustObjectCoordinates(SDL_Rect* objectRect, SDL_Rect cameraRect) {
-    objectRect->x -= cameraRect.x;
-    //objectRect->y -= cameraRect.y;
-}
+// void adjustObjectCoordinates(SDL_Rect* objectRect, SDL_Rect cameraRect) {
+//     objectRect->x -= cameraRect.x;
+//     //objectRect->y -= cameraRect.y;
+// }
 
-void adjustAllObjectsCoordinates(world_t* world) {
-    // Ajuster les coordonnées du joueur
-    adjustObjectCoordinates(&world->player.dest_rect, world->cameraRect);
+// void adjustAllObjectsCoordinates(world_t* world) {
+//     // Ajuster les coordonnées du joueur
+//     adjustObjectCoordinates(&world->player.dest_rect, world->cameraRect);
 
-    // Ajuster les coordonnées des plateformes
-    for (int i = 0; i < world->nbPlateForme; i++) {
-        adjustObjectCoordinates(&world->tab_platesFormes[i].dest_rect, world->cameraRect);
-    }
-    // Ajuster les coordonnées des pieces
-    for (int i = 0; i < world->nbPiece; i++) {
-        adjustObjectCoordinates(&world->tab_coins[i].dest_rect, world->cameraRect);
-    }
-    // Ajuster les coordonnées du drapeau
-    adjustObjectCoordinates(&world->endLevel.dest_rect, world->cameraRect);
-    // Ajuster les coordonnées des ennemis
-    liste temp = world->ennemis ;
-    while(!is_empty(temp)){
-        sprite_t current_ennemy = value(temp);
-        change_value_x(temp, current_ennemy.dest_rect.x - world->cameraRect.x);
-        temp = next(temp);
-    }
+//     // Ajuster les coordonnées des plateformes
+//     for (int i = 0; i < world->nbPlateForme; i++) {
+//         adjustObjectCoordinates(&world->tab_platesFormes[i].dest_rect, world->cameraRect);
+//     }
+//     // Ajuster les coordonnées des pieces
+//     for (int i = 0; i < world->nbPiece; i++) {
+//         adjustObjectCoordinates(&world->tab_coins[i].dest_rect, world->cameraRect);
+//     }
+//     // Ajuster les coordonnées du drapeau
+//     adjustObjectCoordinates(&world->endLevel.dest_rect, world->cameraRect);
+//     // Ajuster les coordonnées des ennemis
+//     liste temp = world->ennemis ;
+//     while(!is_empty(temp)){
+//         sprite_t current_ennemy = value(temp);
+//         change_value_x(temp, current_ennemy.dest_rect.x - world->cameraRect.x);
+//         temp = next(temp);
+//     }
+// }
+
+void clean_world(world_t* world, int nbLig) {
+    desallouer_tab_2D(world->tab_terrain, nbLig);
+    free(world->tab_platesFormes);
+    free(world->tab_coins);
+    free(world->player.walk_rects);
+    free(world->player.walk_with_weapeon_rects);
+    free(world->player.jump_rects);
+    free(world->player.attack_rects);
+    free(world->player.attack_with_weapeon_rects);
+    free(world->player.death_rects);
+    free(world->tab_menu);
+    liberer_liste(world->ennemis);
 }

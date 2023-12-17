@@ -21,6 +21,7 @@ typedef struct ressources_s {
     SDL_Texture *menubackground; /**< Texture pour les menu. */
     SDL_Texture *win; /**< Texture pour les la fin du jeu (gagner). */
     SDL_Texture *lose; /**< Texture pour les la fin du jeu (perdu). */
+    SDL_Texture *fondScore; /**< Texture pour le fond de l'affichage du score. */
     TTF_Font* font; /*!< Texture de stocker la police utilisee pour l'affichage */
 
     // Autres ressources ici
@@ -170,9 +171,13 @@ void display_life_bar_ennemy(SDL_Renderer *renderer, liste ennemis) ;
  * @param ressources les ressources du jeu 
  * @brief met a jour l'ecran
 */
-void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources);
+void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources, int screen_Width);
 
 void print_end_game(SDL_Renderer* renderer, world_t *world, ressources_t* ressources) ;
+
+void printScore(SDL_Renderer* renderer, world_t* world, ressources_t* ressources) ;
+
+void clean_up(world_t* world, ressources_t* ressources, SDL_Renderer* renderer, SDL_Window* window, int nbLig) ;
 
 
 #endif

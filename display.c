@@ -30,6 +30,7 @@ void  init_ressources(SDL_Renderer *renderer, ressources_t *ressources){
     ressources->menubackground = charger_image("ressources/menubackground.bmp", renderer) ;
     ressources->win = charger_image("ressources/you_win.bmp", renderer) ;
     ressources->lose = charger_image("ressources/you_lose.bmp", renderer) ;
+    ressources->fondScore = charger_image("ressources/fond_score.bmp", renderer) ;
     ressources->font = load_font("ressources/arial.ttf", 28);
 
 }
@@ -45,6 +46,7 @@ void clean_ressources(ressources_t *ressources){
     SDL_DestroyTexture(ressources->menubackground);
     SDL_DestroyTexture(ressources->win);
     SDL_DestroyTexture(ressources->lose);
+    SDL_DestroyTexture(ressources->fondScore) ;
     clean_font(ressources->font);
 }
 
@@ -251,12 +253,16 @@ void display_life_bar_ennemy(SDL_Renderer *renderer, liste ennemis){
     }
 }
 
-void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources){
+void refresh_graphics(SDL_Renderer* renderer, world_t *world, ressources_t* ressources, int screen_Width){
+   
     SDL_RenderClear(renderer);   
     // le fond
     SDL_RenderCopy(renderer, ressources->background,NULL, NULL);
     // le font dans la fenetre
-    charger_texte(renderer, 5, 5, SPRITE_HEIGHT, SPRITE_HEIGHT/2, "HP :", ressources->font);
+    charger_texte(renderer, 5, 5, SPRITE_HEIGHT, SPRITE_HEIGHT/2, "HP ", ressources->font);
+    char score[20] ;
+    sprintf(score,"SCORE : %d", world->player.nbPieceRamasse) ;
+    charger_texte(renderer, screen_Width - SPRITE_WIDTH * 3, 5, SPRITE_WIDTH * 3, SPRITE_HEIGHT/2, score, ressources->font);
     // Copier les platformes dans le renderer
     SDL_RenderCopyPlateFormes(world->tab_platesFormes, renderer, ressources->pavage, world->nbPlateForme);
     // Copier les pieces dans le renderer
@@ -284,5 +290,28 @@ void print_end_game(SDL_Renderer* renderer, world_t *world, ressources_t* ressou
     }
     SDL_RenderCopyMenu(renderer, ressources->menu, world->tab_menu);
     SDL_RenderPresent(renderer);
-    SDL_Delay(1000) ;
+    //SDL_Delay(1000) ;
+}
+
+void printScore(SDL_Renderer* renderer, world_t* world, ressources_t* ressources){
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, ressources->fondScore,NULL, NULL);
+    SDL_RenderCopyMenu(renderer, ressources->menu, world->tab_menu);
+    charger_texte(renderer, 5, 100, 300, SPRITE_HEIGHT/2, "5 MEUILLEURES SCORES", ressources->font);
+    int y = 150 ;
+    for(int i = 0; i < TAILLE_TABLEAU_SCORE; i++){
+        char txt[10] ;
+        sprintf(txt,"%d", world->tab_Score[i]) ;
+        charger_texte(renderer, 100, y, SPRITE_WIDTH, SPRITE_HEIGHT/2, txt, ressources->font);
+        y = y + 40 ;
+    }
+    SDL_RenderPresent(renderer);
+}
+
+void clean_up(world_t* world, ressources_t* ressources, SDL_Renderer* renderer, SDL_Window* window, int nbLig){
+    clean_world(world, nbLig) ;
+    clean_ressources(ressources);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 }

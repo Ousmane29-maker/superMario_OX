@@ -20,7 +20,7 @@ int main() {
 
     }
     // Initialiser la SDL et crÃ©er la fenÃªtre
-    init_sdl(&fenetre, &ecran, WINDOW_WIDTH, nbLig*PLATFORM_SIZE);
+    init_sdl(&fenetre, &ecran, nbCol*PLATFORM_SIZE, nbLig*PLATFORM_SIZE);
     //initialiser le font
     init_ttf();
     //initialiser les ressources
@@ -48,6 +48,7 @@ int main() {
             case SDL_MOUSEBUTTONDOWN:                    
                 x = events.button.x;
                 y = events.button.y;
+
                 //check if the mouse clicked on the play button
                 if(x >= world.tab_menu[0].dest_rect.x && x <= world.tab_menu[0].dest_rect.x + world.tab_menu[0].dest_rect.w &&
                     y <= world.tab_menu[0].dest_rect.y + world.tab_menu[0].dest_rect.h && y >= world.tab_menu[0].dest_rect.y){
@@ -57,7 +58,7 @@ int main() {
                         // Mise a jour des donnees
                         update_data(&world, nbLig*PLATFORM_SIZE, nbCol*PLATFORM_SIZE);
                         //refresh graphics
-                        refresh_graphics(ecran, &world, &ressources) ;
+                        refresh_graphics(ecran, &world, &ressources, nbCol*PLATFORM_SIZE) ;
                         // pause de 20 ms a chaque tour de boucle pour bien gerer l'affichage
                         SDL_Delay(20);
                         // Attendre environ 1000 milliseconde apres la fin du jeu
@@ -70,35 +71,32 @@ int main() {
                     print_end_game(ecran, &world, &ressources) ;               
                                     
                 }
+                world.gameOver = 0;
                 //check if the mouse clicked in the exit button
-                if(x >= world.tab_menu[1].dest_rect.x && x <= world.tab_menu[1].dest_rect.x + world.tab_menu[1].dest_rect.w &&
-                    y <= world.tab_menu[1].dest_rect.y + world.tab_menu[1].dest_rect.h && y >= world.tab_menu[1].dest_rect.y){
+                if(x >= world.tab_menu[2].dest_rect.x && x <= world.tab_menu[2].dest_rect.x + world.tab_menu[2].dest_rect.w &&
+                    y <= world.tab_menu[2].dest_rect.y + world.tab_menu[2].dest_rect.h && y >= world.tab_menu[2].dest_rect.y){
                                     
                         world.gameOver = 1;
                 }
-                        
+                //check if the mouse clicked on the play button
+                if(x >= world.tab_menu[0].dest_rect.x && x <= world.tab_menu[0].dest_rect.x + world.tab_menu[0].dest_rect.w &&
+                    y <= world.tab_menu[0].dest_rect.y + world.tab_menu[0].dest_rect.h && y >= world.tab_menu[0].dest_rect.y){
+                            clean_world(&world, nbLig) ;
+                            init_world(&world, "ressources/terrain.txt");
+                }
+                 //check if the mouse clicked on the scores button     
+                if(x >= world.tab_menu[1].dest_rect.x && x <= world.tab_menu[1].dest_rect.x + world.tab_menu[1].dest_rect.w &&
+                    y <= world.tab_menu[1].dest_rect.y + world.tab_menu[1].dest_rect.h && y >= world.tab_menu[1].dest_rect.y){
+                    handle_hightScore("ressources/hightScore.txt", &world.player, world.tab_Score) ;
+                    printScore(ecran, &world, &ressources);
+                } 
                 break;
         }
 
     }
 
-     // LibÃ©rer la mÃ©moire
-    clean_ressources(&ressources);
-    SDL_DestroyRenderer(ecran);
-    desallouer_tab_2D(world.tab_terrain, nbLig);
-    free(world.tab_platesFormes);
-    free(world.tab_coins);
-    free(world.player.walk_rects) ;
-    free(world.player.walk_with_weapeon_rects) ;
-    free(world.player.jump_rects) ;
-    free(world.player.attack_rects) ;
-    free(world.player.attack_with_weapeon_rects) ;
-    free(world.player.death_rects) ;
-    free(world.tab_menu);
-    liberer_liste(world.ennemis) ; 
-    // Quitter SDL
-    SDL_DestroyWindow(fenetre);
-    SDL_Quit();
+     // LibÃ©rer la mÃ©moire et quitter sdl
+    clean_up(&world, &ressources, ecran, fenetre, nbLig) ;
 
     return 0;
 }
